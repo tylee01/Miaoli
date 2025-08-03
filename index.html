@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -50,12 +48,12 @@
                         <span class="hidden sm:inline">新增庫存品項</span>
                         <span class="sm:hidden">品項</span>
                     </button>
-                    <button onclick="openPickupListModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-6 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base">
+                    <button onclick="openBatchPickupModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-6 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
                         </svg>
-                        <span class="hidden sm:inline">物資領取</span>
-                        <span class="sm:hidden">領取</span>
+                        <span class="hidden sm:inline">批量物資領取</span>
+                        <span class="sm:hidden">批量領取</span>
                     </button>
 
                     <button onclick="exportData()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-6 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base">
@@ -290,6 +288,7 @@
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">捐贈類型</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">捐贈者</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">備註</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
                             </tr>
                         </thead>
                         <tbody id="donationRecordsTable" class="bg-white divide-y divide-gray-200">
@@ -548,6 +547,135 @@
         </div>
     </div>
 
+    <!-- 批量物資領取 Modal -->
+    <div id="batchPickupModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-screen overflow-y-auto">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">批量物資領取</h3>
+            </div>
+            <div class="p-6">
+                <!-- 領取單位資訊 -->
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-6">
+                    <h4 class="text-sm font-medium text-blue-800 mb-3">領取單位資訊</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">領取單位</label>
+                            <div class="relative">
+                                <select id="batchRecipientUnit" onchange="handleBatchUnitSelection()" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white">
+                                    <option value="">請選擇領取單位</option>
+                                    <option value="苗栗縣政府社會處">苗栗縣政府社會處</option>
+                                    <option value="苗栗家扶中心">苗栗家扶中心</option>
+                                    <option value="苗栗縣愛心協會">苗栗縣愛心協會</option>
+                                    <option value="苗栗縣老人福利協進會">苗栗縣老人福利協進會</option>
+                                    <option value="苗栗縣身心障礙福利協進會">苗栗縣身心障礙福利協進會</option>
+                                    <option value="苗栗縣單親家庭服務中心">苗栗縣單親家庭服務中心</option>
+                                    <option value="苗栗縣兒童及少年關懷協會">苗栗縣兒童及少年關懷協會</option>
+                                    <option value="頭份市公所">頭份市公所</option>
+                                    <option value="竹南鎮公所">竹南鎮公所</option>
+                                    <option value="苗栗市公所">苗栗市公所</option>
+                                    <option value="通霄鎮公所">通霄鎮公所</option>
+                                    <option value="卓蘭鎮公所">卓蘭鎮公所</option>
+                                    <option value="造橋鄉公所">造橋鄉公所</option>
+                                    <option value="頭屋鄉公所">頭屋鄉公所</option>
+                                    <option value="公館鄉公所">公館鄉公所</option>
+                                    <option value="大湖鄉公所">大湖鄉公所</option>
+                                    <option value="泰安鄉公所">泰安鄉公所</option>
+                                    <option value="銅鑼鄉公所">銅鑼鄉公所</option>
+                                    <option value="三義鄉公所">三義鄉公所</option>
+                                    <option value="西湖鄉公所">西湖鄉公所</option>
+                                    <option value="三灣鄉公所">三灣鄉公所</option>
+                                    <option value="南庄鄉公所">南庄鄉公所</option>
+                                    <option value="獅潭鄉公所">獅潭鄉公所</option>
+                                    <option value="後龍鎮公所">後龍鎮公所</option>
+                                    <option value="個人領取">個人領取</option>
+                                    <option value="其他">其他（自訂）</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <input type="text" id="batchCustomUnit" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2 hidden" placeholder="請輸入自訂單位名稱">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">聯絡電話</label>
+                            <input type="tel" id="batchRecipientPhone" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="請輸入聯絡電話">
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">領取用途/備註</label>
+                        <textarea id="batchPickupNotes" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="例：家庭急需、社區活動等"></textarea>
+                    </div>
+                </div>
+
+                <!-- 物資選擇區域 -->
+                <div class="mb-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-lg font-medium text-gray-900">選擇物資</h4>
+                        <button onclick="selectAllAvailableItems()" class="text-blue-600 hover:text-blue-800 text-sm font-medium">全選有庫存物資</button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto" id="batchItemsList">
+                        <!-- 物資清單將在這裡動態生成 -->
+                    </div>
+                </div>
+
+                <!-- 已選物資摘要 -->
+                <div id="selectedItemsSummary" class="bg-green-50 p-4 rounded-lg border border-green-200 hidden">
+                    <h4 class="text-sm font-medium text-green-800 mb-2">已選物資摘要</h4>
+                    <div id="selectedItemsList" class="space-y-1 text-sm text-green-700">
+                        <!-- 已選物資將在這裡顯示 -->
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+                <button onclick="closeBatchPickupModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200">取消</button>
+                <button onclick="confirmBatchPickup()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200">確認批量領取</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 編輯捐贈紀錄 Modal -->
+    <div id="editDonationModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">編輯捐贈紀錄</h3>
+            </div>
+            <div class="p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">物資名稱</label>
+                        <input type="text" id="editDonationItemName" class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-100" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">捐贈數量</label>
+                        <input type="number" id="editDonationQuantity" min="1" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">捐贈類型</label>
+                        <select id="editDonationType" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="donation">個人捐贈</option>
+                            <option value="corporate">企業捐贈</option>
+                            <option value="designated">指定捐贈</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">捐贈者</label>
+                        <input type="text" id="editDonationDonor" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">備註</label>
+                        <textarea id="editDonationNotes" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+                <button onclick="closeEditDonationModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200">取消</button>
+                <button onclick="saveDonationEdit()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200">儲存</button>
+            </div>
+        </div>
+    </div>
+
 
 
     <!-- 新增庫存品項 Modal -->
@@ -619,231 +747,41 @@
         let currentTab = 'inventory'; // 當前標籤頁
         let currentSort = { field: null, direction: 'asc' }; // 排序狀態
         let currentFilters = { category: '', stock: '' }; // 篩選狀態
+        let selectedBatchItems = {}; // 批量領取選中的物資
+        let editingDonationRecord = null; // 正在編輯的捐贈紀錄
         
         // 庫存品項清單
         const inventoryItemsList = [
-            { category: 'A-食品類', name: '麥片' },
-            { category: 'A-食品類', name: '八寶粥、花生湯' },
-            { category: 'A-食品類', name: '麵、米粉、冬粉、泡麵' },
-            { category: 'A-食品類', name: '油' },
-            { category: 'A-食品類', name: '醬油' },
-            { category: 'A-食品類', name: '米' },
-            { category: 'A-食品類', name: '糖' },
-            { category: 'A-食品類', name: '鹽巴' },
-            { category: 'A-食品類', name: '罐頭' },
-            { category: 'A-食品類', name: '奶粉' },
-            { category: 'A-食品類', name: '餅乾.零食' },
-            { category: 'A-食品類', name: '肉鬆' },
-            { category: 'A-食品類', name: '便當' },
-            { category: 'A-食品類', name: '麵包/蛋糕' },
-            { category: 'A-食品類', name: '料理包、濃湯包' },
-            { category: 'A-食品類', name: '味精' },
-            { category: 'A-食品類', name: '保久乳、營養奶' },
-            { category: 'A-食品類', name: '飲料、飲品、礦泉水' },
-            { category: 'A-食品類', name: '茶包' },
-            { category: 'A-食品類', name: '咖啡' },
-            { category: 'A-食品類', name: '滷蛋' },
-            { category: 'A-食品類', name: '食品(其他)' },
-            { category: 'B-衛生用品', name: '尿布-成人、兒童' },
-            { category: 'B-衛生用品', name: '濕紙巾(包)' },
-            { category: 'B-衛生用品', name: '衛生棉(片)' },
-            { category: 'B-衛生用品', name: '口罩-成人、兒童' },
-            { category: 'B-衛生用品', name: '牙刷-成人、兒童' },
-            { category: 'B-衛生用品', name: '牙膏' },
-            { category: 'B-衛生用品', name: '衛生紙' },
-            { category: 'B-衛生用品', name: '牙線、牙籤' },
-            { category: 'B-衛生用品', name: '吸管' },
-            { category: 'B-衛生用品', name: '免洗手套' },
-            { category: 'B-衛生用品', name: '衛生(其他)' },
-            { category: 'C-清潔用品', name: '沐浴乳' },
-            { category: 'C-清潔用品', name: '洗髮精' },
-            { category: 'C-清潔用品', name: '洗衣精、球' },
-            { category: 'C-清潔用品', name: '洗手乳' },
-            { category: 'C-清潔用品', name: '肥皂、香皂紙' },
-            { category: 'C-清潔用品', name: '洗碗精' },
-            { category: 'C-清潔用品', name: '漂白水' },
-            { category: 'C-清潔用品', name: '酒精' },
-            { category: 'C-清潔用品', name: '洗面乳' },
-            { category: 'C-清潔用品', name: '刮鬍刀' },
-            { category: 'C-清潔用品', name: '清潔刷、菜瓜布、海綿' },
-            { category: 'C-清潔用品', name: '掃把' },
-            { category: 'C-清潔用品', name: '垃圾桶' },
-            { category: 'C-清潔用品', name: '清潔(其他)' },
-            { category: 'D-文具類', name: '紙類' },
-            { category: 'D-文具類', name: 'N次貼' },
-            { category: 'D-文具類', name: '信封' },
-            { category: 'D-文具類', name: '訂書機' },
-            { category: 'D-文具類', name: '訂書針' },
-            { category: 'D-文具類', name: '除釘機' },
-            { category: 'D-文具類', name: '打洞器' },
-            { category: 'D-文具類', name: 'L夾' },
-            { category: 'D-文具類', name: '資料內頁' },
-            { category: 'D-文具類', name: '原子筆' },
-            { category: 'D-文具類', name: '筆芯' },
-            { category: 'D-文具類', name: '顏料-水彩、壓克力' },
-            { category: 'D-文具類', name: '畫筆-蠟筆、彩色筆' },
-            { category: 'D-文具類', name: '螢光筆' },
-            { category: 'D-文具類', name: '奇異筆' },
-            { category: 'D-文具類', name: '鉛筆' },
-            { category: 'D-文具類', name: '文具套組' },
-            { category: 'D-文具類', name: '筆袋(個)' },
-            { category: 'D-文具類', name: '筆桶(個)' },
-            { category: 'D-文具類', name: '板夾' },
-            { category: 'D-文具類', name: '瓦愣板' },
-            { category: 'D-文具類', name: '膠帶(捲)' },
-            { category: 'D-文具類', name: '膠水(個)' },
-            { category: 'D-文具類', name: '美工刀(支)' },
-            { category: 'D-文具類', name: '剪刀(個)' },
-            { category: 'D-文具類', name: '尺(把)' },
-            { category: 'D-文具類', name: '立可帶/白(個)' },
-            { category: 'D-文具類', name: '橡皮擦(個)' },
-            { category: 'D-文具類', name: '圖釘' },
-            { category: 'D-文具類', name: '燕尾夾、迴紋針' },
-            { category: 'D-文具類', name: '毛根' },
-            { category: 'D-文具類', name: '調色盤' },
-            { category: 'D-文具類', name: '貼紙' },
-            { category: 'D-文具類', name: '亮片' },
-            { category: 'D-文具類', name: '可愛印章' },
-            { category: 'D-文具類', name: '磁鐵' },
-            { category: 'D-文具類', name: '緞帶' },
-            { category: 'D-文具類', name: '書' },
-            { category: 'D-文具類', name: '打印台、印泥' },
-            { category: 'D-文具類', name: '存錢筒' },
-            { category: 'D-文具類', name: '文具類(其他)' },
-            { category: 'E-廚房用具', name: '杯子' },
-            { category: 'E-廚房用具', name: '碗' },
-            { category: 'E-廚房用具', name: '盤' },
-            { category: 'E-廚房用具', name: '湯鍋' },
-            { category: 'E-廚房用具', name: '鍋蓋' },
-            { category: 'E-廚房用具', name: '筷子' },
-            { category: 'E-廚房用具', name: '湯匙' },
-            { category: 'E-廚房用具', name: '夾子' },
-            { category: 'E-廚房用具', name: '保鮮盒' },
-            { category: 'E-廚房用具', name: '餐盒' },
-            { category: 'E-廚房用具', name: '保冷/冰袋' },
-            { category: 'E-廚房用具', name: '密封夾' },
-            { category: 'E-廚房用具', name: '儲物罐、調味罐' },
-            { category: 'E-廚房用具', name: '桌巾' },
-            { category: 'E-廚房用具', name: '水壺' },
-            { category: 'E-廚房用具', name: '噴壺' },
-            { category: 'E-廚房用具', name: '快煮水壺' },
-            { category: 'E-廚房用具', name: '灑水碗架(個)' },
-            { category: 'E-廚房用具', name: '菜刀' },
-            { category: 'E-廚房用具', name: '磨刀器(組)' },
-            { category: 'E-廚房用具', name: '電子秤(個)' },
-            { category: 'E-廚房用具', name: '野餐墊' },
-            { category: 'E-廚房用具', name: '廚房紙巾' },
-            { category: 'E-廚房用具', name: '保溫杯' },
-            { category: 'E-廚房用具', name: '廚房用具(其他)' },
-            { category: 'F-髮飾類', name: '梳子' },
-            { category: 'F-髮飾類', name: '帽子' },
-            { category: 'F-髮飾類', name: '髮圈(' },
-            { category: 'F-髮飾類', name: '髮夾' },
-            { category: 'F-髮飾類', name: '防燙夾' },
-            { category: 'F-髮飾類', name: '項鍊' },
-            { category: 'F-髮飾類', name: '髮飾類(其他)' },
-            { category: 'G-玩具類', name: '娃娃' },
-            { category: 'G-玩具類', name: '音樂類玩具' },
-            { category: 'G-玩具類', name: '球類玩具' },
-            { category: 'G-玩具類', name: '對講機(組)' },
-            { category: 'G-玩具類', name: '裝飾品、吊飾' },
-            { category: 'G-玩具類', name: '手電筒(個)' },
-            { category: 'G-玩具類', name: '捏捏樂(個)' },
-            { category: 'G-玩具類', name: '積木' },
-            { category: 'G-玩具類', name: '拼圖' },
-            { category: 'G-玩具類', name: '讀本' },
-            { category: 'G-玩具類', name: '卡片' },
-            { category: 'G-玩具類', name: '桌遊' },
-            { category: 'G-玩具類', name: '撲滿(個)' },
-            { category: 'G-玩具類', name: '電池(個)' },
-            { category: 'G-玩具類', name: '玩具類(其他)' },
-            { category: 'H-運動類', name: '網球拍(組)' },
-            { category: 'H-運動類', name: '彈力帶(組)' },
-            { category: 'H-運動類', name: '彈力球' },
-            { category: 'H-運動類', name: '護膝' },
-            { category: 'H-運動類', name: '籃球' },
-            { category: 'H-運動類', name: '羽毛球拍' },
-            { category: 'H-運動類', name: '羽毛球' },
-            { category: 'H-運動類', name: '桌球拍' },
-            { category: 'H-運動類', name: '桌球' },
-            { category: 'H-運動類', name: '泳鏡(個)' },
-            { category: 'H-運動類', name: '跳繩(個)' },
-            { category: 'H-運動類', name: '運動類(其他)' },
-            { category: 'I-居家類', name: '衣服' },
-            { category: 'I-居家類', name: '毛巾' },
-            { category: 'I-居家類', name: '手袖' },
-            { category: 'I-居家類', name: '襪子' },
-            { category: 'I-居家類', name: '枕頭' },
-            { category: 'I-居家類', name: '棉被/睡袋/毛毯' },
-            { category: 'I-居家類', name: '床墊' },
-            { category: 'I-居家類', name: '手套' },
-            { category: 'I-居家類', name: '床包' },
-            { category: 'I-居家類', name: '涼蓆' },
-            { category: 'I-居家類', name: '包包、購物袋' },
-            { category: 'J-生活用品', name: '收納盒、收納箱' },
-            { category: 'J-生活用品', name: '手機殼' },
-            { category: 'J-生活用品', name: '置物架' },
-            { category: 'J-生活用品', name: '衣架' },
-            { category: 'J-生活用品', name: '毛線' },
-            { category: 'J-生活用品', name: '防蚊貼' },
-            { category: 'J-生活用品', name: '鞋' },
-            { category: 'J-生活用品', name: '掛勾' },
-            { category: 'J-生活用品', name: '助行器' },
-            { category: 'J-生活用品', name: '桌子' },
-            { category: 'J-生活用品', name: '椅子' },
-            { category: 'J-生活用品', name: '耳機' },
-            { category: 'J-生活用品', name: '行李箱' },
-            { category: 'J-生活用品', name: '涼墊' },
-            { category: 'J-生活用品', name: '腳踏墊' },
-            { category: 'J-生活用品', name: '音響' },
-            { category: 'J-生活用品', name: '鐵網' },
-            { category: 'J-生活用品', name: '繩子' },
-            { category: 'J-生活用品', name: '雨具-雨傘、雨衣' },
-            { category: 'J-生活用品', name: '尿盆' },
-            { category: 'J-生活用品', name: '安全帽' },
-            { category: 'J-生活用品', name: '盆栽' },
-            { category: 'J-生活用品', name: '衛生紙盒' },
-            { category: 'J-生活用品', name: '滑鼠' },
-            { category: 'J-生活用品', name: 'USB' },
-            { category: 'J-生活用品', name: '擴香劑' },
-            { category: 'J-生活用品', name: '暖暖包' },
-            { category: 'J-生活用品', name: '生活用品類(其他)' },
-            { category: 'K-家電類', name: '洗衣機' },
-            { category: 'K-家電類', name: '掃地機器人' },
-            { category: 'K-家電類', name: '給皂機' },
-            { category: 'K-家電類', name: '吹風機' },
-            { category: 'K-家電類', name: '乾燥器' },
-            { category: 'K-家電類', name: '烤箱' },
-            { category: 'K-家電類', name: '飯電鍋' },
-            { category: 'K-家電類', name: '土司機' },
-            { category: 'K-家電類', name: '風扇' },
-            { category: 'K-家電類', name: '冷氣機(二手)' },
-            { category: 'K-家電類', name: '熱水器' },
-            { category: 'K-家電類', name: '燈具' },
-            { category: 'K-家電類', name: '其他家電類' },
-            { category: 'L-其他', name: '魚肝油(盒)' },
-            { category: 'L-其他', name: '維生素C+鋅錠(個)' },
-            { category: 'L-其他', name: '精力湯(入)' },
-            { category: 'L-其他', name: '保健食品(其他)' },
-            { category: 'L-其他', name: '蒸氣眼罩' },
-            { category: 'L-其他', name: '防曬乳' },
-            { category: 'L-其他', name: '護手霜' },
-            { category: 'L-其他', name: '隔離霜' },
-            { category: 'L-其他', name: '化妝棉' },
-            { category: 'L-其他', name: 'OK蹦' },
-            { category: 'L-其他', name: '痠痛貼布' },
-            { category: 'L-其他', name: '鏡子' },
-            { category: 'L-其他', name: '眼鏡' },
-            { category: 'L-其他', name: '拔罐器' },
-            { category: 'L-其他', name: '離子夾' },
-            { category: 'L-其他', name: '美妝(其他)' },
-            { category: 'L-其他', name: '禮品' },
-            { category: 'L-其他', name: '茶具' },
-            { category: 'L-其他', name: '娃娃車' },
-            { category: 'L-其他', name: '防護衣' },
-            { category: 'L-其他', name: '乳液' },
-            { category: 'L-其他', name: '橡皮筋' },
-            { category: 'L-其他', name: '其他(不分類)' }
+            { category: '常用類', name: '成人尿布' },
+            { category: '常用類', name: '濕紙巾' },
+            { category: '常用類', name: '衛生棉' },
+            { category: '常用類', name: '麥片' },
+            { category: '常用類', name: '八寶粥' },
+            { category: '常用類', name: '泡麵' },
+            { category: '常用類', name: '麵' },
+            { category: '常用類', name: '油' },
+            { category: '常用類', name: '醬油' },
+            { category: '常用類', name: '口罩' },
+            { category: '常用類', name: '沐浴露' },
+            { category: '常用類', name: '洗髮露' },
+            { category: '常用類', name: '洗衣精' },
+            { category: '常用類', name: '肥皂' },
+            { category: '常用類', name: '牙刷' },
+            { category: '常用類', name: '牙膏' },
+            { category: '常用類', name: '酒精' },
+            { category: '常用類', name: '衛生紙' },
+            { category: '常用類', name: '米' },
+            { category: '常用類', name: '罐頭' },
+            { category: '常用類', name: '奶粉' },
+            { category: '常用類', name: '刮鬍刀' },
+            { category: '常用類', name: '餅乾.零食' },
+            { category: '常用類', name: '砂糖' },
+            { category: '常用類', name: '鹽巴' },
+            { category: '常用類', name: '兒童尿布' },
+            { category: '常用類', name: '洗碗精' },
+            { category: '常用類', name: '漂白水' },
+            { category: '常用類', name: '肉鬆' },
+            { category: '常用類', name: '礦泉水' }
         ];
         
         // 物資資料存儲 - 使用完整的庫存品項清單
@@ -1090,7 +1028,7 @@
         
         function getItemCategory(itemName) {
             const item = inventoryItemsList.find(inv => inv.name === itemName);
-            return item ? item.category : 'L-其他';
+            return item ? item.category : '常用類';
         }
 
         // 渲染物資列表
@@ -1814,7 +1752,9 @@
                                 unit: item.unit,
                                 type: typeText[op.type],
                                 donor: donor,
-                                notes: op.notes || '-'
+                                notes: op.notes || '-',
+                                originalIndex: items.indexOf(item),
+                                operationIndex: item.operations.indexOf(op)
                             });
                         }
                     });
@@ -1847,6 +1787,10 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.donor}</td>
                     <td class="px-6 py-4 text-sm text-gray-900 max-w-xs truncate" title="${record.notes}">${record.notes}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="editDonationRecord(${record.originalIndex}, ${record.operationIndex})" class="text-indigo-600 hover:text-indigo-900 mr-2">編輯</button>
+                        <button onclick="deleteDonationRecord(${record.originalIndex}, ${record.operationIndex})" class="text-red-600 hover:text-red-900">刪除</button>
+                    </td>
                 </tr>
             `).join('');
         }
@@ -1887,7 +1831,9 @@
                                 unit: item.unit,
                                 type: typeText[op.type],
                                 donor: donor,
-                                notes: op.notes || '-'
+                                notes: op.notes || '-',
+                                originalIndex: items.indexOf(item),
+                                operationIndex: item.operations.indexOf(op)
                             });
                         }
                     });
@@ -1934,7 +1880,9 @@
                                 unit: item.unit,
                                 type: typeText[op.type],
                                 donor: donor,
-                                notes: op.notes || '-'
+                                notes: op.notes || '-',
+                                originalIndex: items.indexOf(item),
+                                operationIndex: item.operations.indexOf(op)
                             });
                         }
                     });
@@ -2274,6 +2222,18 @@
             }
         });
 
+        document.getElementById('batchPickupModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeBatchPickupModal();
+            }
+        });
+
+        document.getElementById('editDonationModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditDonationModal();
+            }
+        });
+
         // 庫存品項管理功能
         function populateInventorySelect() {
             const select = document.getElementById('itemName');
@@ -2296,7 +2256,6 @@
                 });
                 optionsHTML += '</optgroup>';
             });
-
 
             select.innerHTML = optionsHTML;
         }
@@ -2330,7 +2289,7 @@
         function selectInventoryItem(itemName) {
             // 新增自訂品項到庫存清單
             const newItem = {
-                category: 'L-其他',
+                category: '常用類',
                 name: itemName
             };
             
@@ -2342,7 +2301,7 @@
                 // 同時新增到物資清單
                 const newInventoryItem = {
                     name: itemName,
-                    category: 'L-其他',
+                    category: '常用類',
                     barcode: '',
                     unit: '個',
                     quantity: 0,
@@ -2402,7 +2361,15 @@
         // 填充類別篩選下拉選單
         function populateCategoryFilter() {
             const categoryFilter = document.getElementById('categoryFilter');
-            const categories = [...new Set(items.map(item => item.category))].sort();
+            
+            // 從庫存品項清單中獲取所有類別，確保完整性
+            const allCategories = [...new Set(inventoryItemsList.map(item => item.category))];
+            
+            // 也包含現有物資的類別（以防有自訂類別）
+            const existingCategories = [...new Set(items.map(item => item.category).filter(cat => cat))];
+            
+            // 合併並去重
+            const categories = [...new Set([...allCategories, ...existingCategories])].sort();
             
             let optionsHTML = '<option value="">全部類別</option>';
             categories.forEach(category => {
@@ -2473,7 +2440,341 @@
             return filteredItems;
         }
 
+        // 批量物資領取功能
+        function openBatchPickupModal() {
+            const modal = document.getElementById('batchPickupModal');
+            selectedBatchItems = {};
+            
+            // 清空表單
+            document.getElementById('batchRecipientUnit').value = '';
+            document.getElementById('batchCustomUnit').value = '';
+            document.getElementById('batchCustomUnit').classList.add('hidden');
+            document.getElementById('batchRecipientPhone').value = '';
+            document.getElementById('batchPickupNotes').value = '';
+            
+            renderBatchItemsList();
+            updateSelectedItemsSummary();
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeBatchPickupModal() {
+            const modal = document.getElementById('batchPickupModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            selectedBatchItems = {};
+        }
+
+        function handleBatchUnitSelection() {
+            const unitSelect = document.getElementById('batchRecipientUnit');
+            const customInput = document.getElementById('batchCustomUnit');
+            
+            if (unitSelect.value === '其他') {
+                customInput.classList.remove('hidden');
+                customInput.focus();
+            } else {
+                customInput.classList.add('hidden');
+                customInput.value = '';
+            }
+        }
+
+        function renderBatchItemsList() {
+            const itemsList = document.getElementById('batchItemsList');
+            const availableItems = items.filter(item => item.quantity > 0);
+            
+            if (availableItems.length === 0) {
+                itemsList.innerHTML = `
+                    <div class="col-span-full text-center py-8">
+                        <p class="text-gray-500">目前沒有可領取的物資</p>
+                    </div>
+                `;
+                return;
+            }
+
+            itemsList.innerHTML = availableItems.map((item, index) => {
+                const actualIndex = items.findIndex(i => i === item);
+                const isSelected = selectedBatchItems[actualIndex];
+                
+                return `
+                    <div class="border border-gray-200 rounded-lg p-4 ${isSelected ? 'bg-blue-50 border-blue-300' : 'bg-white'}">
+                        <div class="flex items-start gap-3">
+                            <input type="checkbox" 
+                                   id="batch_item_${actualIndex}" 
+                                   ${isSelected ? 'checked' : ''}
+                                   onchange="toggleBatchItem(${actualIndex})"
+                                   class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                            <div class="flex-1 min-w-0">
+                                <label for="batch_item_${actualIndex}" class="block text-sm font-medium text-gray-900 cursor-pointer">
+                                    ${item.name}
+                                </label>
+                                <p class="text-sm text-gray-600">庫存：${item.quantity} ${item.unit}</p>
+                                ${item.quantity < 5 ? '<p class="text-xs text-orange-500">庫存不足</p>' : ''}
+                                
+                                <div class="mt-2 ${isSelected ? '' : 'hidden'}" id="quantity_input_${actualIndex}">
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">領取數量</label>
+                                    <input type="number" 
+                                           min="1" 
+                                           max="${item.quantity}"
+                                           value="${isSelected ? isSelected.quantity : 1}"
+                                           onchange="updateBatchItemQuantity(${actualIndex}, this.value)"
+                                           class="w-full border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleBatchItem(itemIndex) {
+            const checkbox = document.getElementById(`batch_item_${itemIndex}`);
+            const quantityInput = document.getElementById(`quantity_input_${itemIndex}`);
+            const item = items[itemIndex];
+            
+            if (checkbox.checked) {
+                selectedBatchItems[itemIndex] = {
+                    name: item.name,
+                    unit: item.unit,
+                    maxQuantity: item.quantity,
+                    quantity: 1
+                };
+                quantityInput.classList.remove('hidden');
+            } else {
+                delete selectedBatchItems[itemIndex];
+                quantityInput.classList.add('hidden');
+            }
+            
+            // 更新卡片樣式
+            const card = checkbox.closest('.border');
+            if (checkbox.checked) {
+                card.classList.add('bg-blue-50', 'border-blue-300');
+                card.classList.remove('bg-white');
+            } else {
+                card.classList.remove('bg-blue-50', 'border-blue-300');
+                card.classList.add('bg-white');
+            }
+            
+            updateSelectedItemsSummary();
+        }
+
+        function updateBatchItemQuantity(itemIndex, quantity) {
+            const qty = parseInt(quantity);
+            if (selectedBatchItems[itemIndex] && qty > 0) {
+                selectedBatchItems[itemIndex].quantity = qty;
+                updateSelectedItemsSummary();
+            }
+        }
+
+        function selectAllAvailableItems() {
+            const availableItems = items.filter(item => item.quantity > 0);
+            
+            availableItems.forEach(item => {
+                const itemIndex = items.indexOf(item);
+                const checkbox = document.getElementById(`batch_item_${itemIndex}`);
+                
+                if (checkbox && !checkbox.checked) {
+                    checkbox.checked = true;
+                    toggleBatchItem(itemIndex);
+                }
+            });
+        }
+
+        function updateSelectedItemsSummary() {
+            const summary = document.getElementById('selectedItemsSummary');
+            const itemsList = document.getElementById('selectedItemsList');
+            
+            const selectedCount = Object.keys(selectedBatchItems).length;
+            
+            if (selectedCount === 0) {
+                summary.classList.add('hidden');
+                return;
+            }
+            
+            summary.classList.remove('hidden');
+            itemsList.innerHTML = Object.entries(selectedBatchItems).map(([index, item]) => 
+                `<div>${item.name}：${item.quantity} ${item.unit}</div>`
+            ).join('');
+        }
+
+        function confirmBatchPickup() {
+            const recipientUnit = document.getElementById('batchRecipientUnit').value;
+            const customUnit = document.getElementById('batchCustomUnit').value.trim();
+            const recipientPhone = document.getElementById('batchRecipientPhone').value.trim();
+            const pickupNotes = document.getElementById('batchPickupNotes').value.trim();
+            
+            if (Object.keys(selectedBatchItems).length === 0) {
+                alert('請至少選擇一項物資');
+                return;
+            }
+            
+            let finalUnit = recipientUnit;
+            if (recipientUnit === '其他') {
+                if (!customUnit) {
+                    alert('請輸入自訂單位名稱');
+                    return;
+                }
+                finalUnit = customUnit;
+            } else if (!recipientUnit) {
+                alert('請選擇領取單位');
+                return;
+            }
+            
+            // 批量處理領取
+            let successCount = 0;
+            const totalItems = Object.keys(selectedBatchItems).length;
+            
+            Object.entries(selectedBatchItems).forEach(([itemIndex, selectedItem]) => {
+                const item = items[parseInt(itemIndex)];
+                const pickupQuantity = selectedItem.quantity;
+                
+                if (pickupQuantity <= item.quantity) {
+                    // 更新庫存
+                    item.quantity -= pickupQuantity;
+                    item.lastUpdated = new Date().toLocaleDateString('zh-TW');
+                    
+                    // 記錄領取操作
+                    if (!item.operations) {
+                        item.operations = [];
+                    }
+                    
+                    item.operations.push({
+                        type: 'pickup',
+                        quantity: -pickupQuantity,
+                        date: new Date().toLocaleDateString('zh-TW'),
+                        notes: `批量領取 - 領取單位：${finalUnit}${recipientPhone ? ` (${recipientPhone})` : ''}${pickupNotes ? ` - ${pickupNotes}` : ''}`,
+                        recipientUnit: finalUnit,
+                        recipientPhone: recipientPhone,
+                        pickupNotes: pickupNotes,
+                        evidenceImage: null
+                    });
+                    
+                    successCount++;
+                }
+            });
+            
+            // 儲存資料
+            localStorage.setItem('charityItems', JSON.stringify(items));
+            
+            // 更新顯示
+            renderItems();
+            updateStats();
+            
+            // 關閉 Modal
+            closeBatchPickupModal();
+            
+            // 顯示成功訊息
+            alert(`批量領取成功！\n成功領取 ${successCount}/${totalItems} 項物資\n領取單位：${finalUnit}`);
+        }
+
+        // 捐贈紀錄編輯功能
+        function editDonationRecord(itemIndex, operationIndex) {
+            const item = items[itemIndex];
+            const operation = item.operations[operationIndex];
+            
+            editingDonationRecord = { itemIndex, operationIndex };
+            
+            // 填入編輯表單
+            document.getElementById('editDonationItemName').value = item.name;
+            document.getElementById('editDonationQuantity').value = operation.quantity;
+            document.getElementById('editDonationType').value = operation.type;
+            
+            // 從備註中提取捐贈者資訊
+            let donor = '';
+            if (operation.notes) {
+                const match = operation.notes.match(/捐贈者：(.+?)(?:\s*-\s*|$)/);
+                if (match) {
+                    donor = match[1];
+                }
+            }
+            document.getElementById('editDonationDonor').value = donor;
+            document.getElementById('editDonationNotes').value = operation.notes || '';
+            
+            // 顯示 Modal
+            const modal = document.getElementById('editDonationModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeEditDonationModal() {
+            const modal = document.getElementById('editDonationModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            editingDonationRecord = null;
+        }
+
+        function saveDonationEdit() {
+            if (!editingDonationRecord) return;
+            
+            const { itemIndex, operationIndex } = editingDonationRecord;
+            const item = items[itemIndex];
+            const operation = item.operations[operationIndex];
+            
+            const newQuantity = parseInt(document.getElementById('editDonationQuantity').value);
+            const newType = document.getElementById('editDonationType').value;
+            const newDonor = document.getElementById('editDonationDonor').value.trim();
+            const newNotes = document.getElementById('editDonationNotes').value.trim();
+            
+            if (!newQuantity || newQuantity <= 0) {
+                alert('請輸入有效的捐贈數量');
+                return;
+            }
+            
+            // 計算庫存差異
+            const quantityDiff = newQuantity - operation.quantity;
+            
+            // 更新庫存
+            item.quantity += quantityDiff;
+            
+            // 更新操作紀錄
+            operation.quantity = newQuantity;
+            operation.type = newType;
+            operation.notes = `捐贈者：${newDonor}${newNotes ? ` - ${newNotes}` : ''}`;
+            
+            // 儲存資料
+            localStorage.setItem('charityItems', JSON.stringify(items));
+            
+            // 更新顯示
+            renderItems();
+            updateStats();
+            renderDonationRecords();
+            
+            // 關閉 Modal
+            closeEditDonationModal();
+            
+            alert('捐贈紀錄已更新！');
+        }
+
+        function deleteDonationRecord(itemIndex, operationIndex) {
+            if (!confirm('確定要刪除此捐贈紀錄嗎？這將會調整相應的庫存數量。')) {
+                return;
+            }
+            
+            const item = items[itemIndex];
+            const operation = item.operations[operationIndex];
+            
+            // 調整庫存（減去捐贈數量）
+            item.quantity -= operation.quantity;
+            
+            // 如果庫存變為負數，設為0
+            if (item.quantity < 0) {
+                item.quantity = 0;
+            }
+            
+            // 刪除操作紀錄
+            item.operations.splice(operationIndex, 1);
+            
+            // 儲存資料
+            localStorage.setItem('charityItems', JSON.stringify(items));
+            
+            // 更新顯示
+            renderItems();
+            updateStats();
+            renderDonationRecords();
+            
+            alert('捐贈紀錄已刪除，庫存已相應調整！');
+        }
 
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9658ad09f7cdf1c8',t:'MTc1MzU4MzAxOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96962d1e10a2f220',t:'MTc1NDIyNzg5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
