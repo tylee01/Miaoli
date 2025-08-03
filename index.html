@@ -12,6 +12,9 @@
                 extend: {
                     fontFamily: {
                         'chinese': ['Microsoft JhengHei', 'PingFang TC', 'Noto Sans TC', 'sans-serif']
+                    },
+                    screens: {
+                        'xs': '480px'
                     }
                 }
             }
@@ -1091,7 +1094,9 @@
             }).join('');
 
             // 手機版卡片
-            mobileList.innerHTML = itemsToRender.map((item, index) => {
+            mobileList.innerHTML = itemsToRender.map((item, originalIndex) => {
+                // 找到原始索引
+                const actualIndex = items.findIndex(i => i.name === item.name && i.category === item.category && i.quantity === item.quantity);
                 const categoryName = item.category ? item.category.replace(/^[A-Z]-/, '') : '其他';
                 return `
                 <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
@@ -1116,13 +1121,6 @@
                             </div>
                             
                             ${item.quantity === 0 ? '<div class="text-xs text-red-500 mt-1">發送完畢</div>' : item.quantity < 5 ? '<div class="text-xs text-orange-500 mt-1">庫存不足</div>' : ''}
-                            
-                            <!-- 操作按鈕 -->
-                            <div class="flex gap-2 mt-3">
-                                <button onclick="openModal('edit', ${index})" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors duration-200">編輯</button>
-                                <button onclick="openPickupModal(${index})" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors duration-200">領取</button>
-                                <button onclick="deleteItem(${index})" class="flex-1 bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors duration-200">刪除</button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -2776,5 +2774,5 @@
         }
 
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96962d1e10a2f220',t:'MTc1NDIyNzg5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'969677ee8052f24c',t:'MTc1NDIzMDk2MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
