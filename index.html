@@ -216,6 +216,10 @@
                                     <option value="empty">發送完畢</option>
                                 </select>
                             </div>
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" id="editSafetyStockToggle" onchange="toggleSafetyStockEdit()" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <label for="editSafetyStockToggle" class="text-sm font-medium text-gray-700">編輯安全庫存量</label>
+                            </div>
                             <button onclick="clearFilters()" class="text-sm text-blue-600 hover:text-blue-800 underline">清除篩選</button>
                         </div>
                     </div>
@@ -246,6 +250,9 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
                                         </svg>
                                     </div>
+                                </th>
+                                <th class="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    安全庫存量
                                 </th>
                             </tr>
                         </thead>
@@ -438,6 +445,11 @@
                         </div>
                     </div>
                     
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">安全庫存量</label>
+                        <input type="number" id="safetyStock" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="設定安全庫存量（預設5）" value="5">
+                        <p class="text-xs text-gray-500 mt-1">當庫存低於此數量時會顯示警告</p>
+                    </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">備註</label>
                         <textarea id="itemNotes" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="其他備註資訊"></textarea>
@@ -638,6 +650,45 @@
         </div>
     </div>
 
+    <!-- 收據選取 Modal -->
+    <div id="receiptSelectionModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-screen overflow-y-auto">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">選擇要列印收據的捐贈紀錄</h3>
+            </div>
+            <div class="p-6">
+                <div class="mb-4">
+                    <div class="flex justify-between items-center">
+                        <button onclick="selectAllReceipts()" class="text-blue-600 hover:text-blue-800 text-sm font-medium">全選</button>
+                        <button onclick="clearAllReceipts()" class="text-gray-600 hover:text-gray-800 text-sm font-medium">清除全選</button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">選擇</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">捐贈日期</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">物資名稱</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">數量</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">捐贈者</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">電話</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">地址</th>
+                            </tr>
+                        </thead>
+                        <tbody id="receiptSelectionTable" class="bg-white divide-y divide-gray-200">
+                            <!-- 捐贈紀錄選取列表將在這裡動態生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+                <button onclick="closeReceiptSelectionModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200">取消</button>
+                <button onclick="generateSelectedReceipts()" class="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200">列印選取的收據</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 編輯捐贈紀錄 Modal -->
     <div id="editDonationModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
@@ -748,10 +799,12 @@
     <script>
         // 全域變數
         let currentTab = 'inventory'; // 當前標籤頁
-        let currentSort = { field: null, direction: 'asc' }; // 排序狀態
+        let currentSort = { field: 'name', direction: 'asc' }; // 排序狀態 - 預設用物資名稱排序
         let currentFilters = { category: '', stock: '' }; // 篩選狀態
         let selectedBatchItems = {}; // 批量領取選中的物資
         let editingDonationRecord = null; // 正在編輯的捐贈紀錄
+        let receiptRecords = []; // 收據選取紀錄
+        let safetyStockEditMode = false; // 安全庫存量編輯模式
         
         // 庫存品項清單
         const inventoryItemsList = [
@@ -794,6 +847,7 @@
             barcode: '',
             unit: '個',
             quantity: 0,
+            safetyStock: 5,
             notes: '',
             createdDate: new Date().toLocaleDateString('zh-TW', { month: '2-digit', day: '2-digit' }),
             lastUpdated: new Date().toLocaleDateString('zh-TW'),
@@ -905,6 +959,7 @@
                 firstRow.querySelector('.item-unit').value = item.unit;
                 firstRow.querySelector('.item-quantity').value = item.quantity;
                 document.getElementById('itemNotes').value = item.notes || '';
+                document.getElementById('safetyStock').value = item.safetyStock || 5;
                 editingIndex = index;
             }
             
@@ -927,6 +982,7 @@
             const donorPhone = document.getElementById('donorPhone').value.trim();
             const donorAddress = document.getElementById('donorAddress').value.trim();
             const notes = document.getElementById('itemNotes').value.trim();
+            const safetyStock = parseInt(document.getElementById('safetyStock').value) || 5;
             const lineNotify = document.getElementById('lineNotify').checked;
             
             // 收集所有物資項目
@@ -958,12 +1014,12 @@
             if (editingIndex === -1) {
                 // 新增模式：處理多項物資
                 itemsData.forEach(itemData => {
-                    saveItemData(itemData, donorInfo, notes, lineNotify);
+                    saveItemData(itemData, donorInfo, notes, safetyStock, lineNotify);
                 });
             } else {
                 // 編輯模式：只處理第一項物資
                 const itemData = itemsData[0];
-                updateExistingItem(editingIndex, itemData, donorInfo, notes, lineNotify);
+                updateExistingItem(editingIndex, itemData, donorInfo, notes, safetyStock, lineNotify);
             }
             
             localStorage.setItem('charityItems', JSON.stringify(items));
@@ -972,12 +1028,14 @@
             closeModal();
         }
 
-        function saveItemData(itemData, donorInfo, notes, lineNotify) {
-            // 查找是否已存在相同物資
-            const existingIndex = items.findIndex(item => item.name === itemData.name);
+        function saveItemData(itemData, donorInfo, notes, safetyStock, lineNotify) {
+            // 查找是否已存在相同物資名稱和單位的物資
+            const existingIndex = items.findIndex(item => 
+                item.name === itemData.name && item.unit === itemData.unit
+            );
             
             if (existingIndex !== -1) {
-                // 更新現有物資
+                // 更新現有物資（只有名稱和單位都相同才合併）
                 const existingItem = items[existingIndex];
                 existingItem.quantity += itemData.quantity;
                 existingItem.lastUpdated = new Date().toLocaleDateString('zh-TW');
@@ -989,13 +1047,14 @@
                     notes: `捐贈者：${donorInfo}${notes ? ` - ${notes}` : ''}`
                 });
             } else {
-                // 新增物資
+                // 新增物資（不同單位的相同物資會分開建立）
                 const newItem = {
                     name: itemData.name,
                     category: getItemCategory(itemData.name),
                     barcode: '',
                     unit: itemData.unit,
                     quantity: itemData.quantity,
+                    safetyStock: safetyStock,
                     notes: notes,
                     createdDate: new Date().toLocaleDateString('zh-TW', { month: '2-digit', day: '2-digit' }),
                     lastUpdated: new Date().toLocaleDateString('zh-TW'),
@@ -1012,11 +1071,12 @@
             }
         }
         
-        function updateExistingItem(index, itemData, donorInfo, notes, lineNotify) {
+        function updateExistingItem(index, itemData, donorInfo, notes, safetyStock, lineNotify) {
             const existingItem = items[index];
             existingItem.name = itemData.name;
             existingItem.unit = itemData.unit;
             existingItem.quantity = itemData.quantity;
+            existingItem.safetyStock = safetyStock;
             existingItem.notes = notes;
             existingItem.lastUpdated = new Date().toLocaleDateString('zh-TW');
             existingItem.lineNotify = lineNotify;
@@ -1073,6 +1133,7 @@
             tbody.innerHTML = itemsToRender.map((item, index) => {
                 // 從分類中提取類別名稱（去掉前綴字母）
                 const categoryName = item.category ? item.category.replace(/^[A-Z]-/, '') : '其他';
+                const actualIndex = items.findIndex(i => i.name === item.name && i.category === item.category);
                 
                 return `
                     <tr class="hover:bg-gray-50">
@@ -1086,8 +1147,18 @@
                             ${item.notes ? `<div class="text-xs text-gray-500 truncate max-w-32">${item.notes}</div>` : ''}
                         </td>
                         <td class="px-3 lg:px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium ${item.quantity === 0 ? 'text-red-600' : item.quantity < 5 ? 'text-orange-600' : 'text-green-600'}">${item.quantity} ${item.unit}</div>
-                            ${item.quantity === 0 ? '<div class="text-xs text-red-500">發送完畢</div>' : item.quantity < 5 ? '<div class="text-xs text-orange-500">庫存不足</div>' : ''}
+                            <div class="text-sm font-medium ${item.quantity === 0 ? 'text-red-600' : item.quantity <= (item.safetyStock || 5) ? 'text-orange-600' : 'text-green-600'}">${item.quantity} ${item.unit}</div>
+                            ${item.quantity === 0 ? '<div class="text-xs text-red-500">發送完畢</div>' : item.quantity <= (item.safetyStock || 5) ? '<div class="text-xs text-orange-500">庫存不足</div>' : ''}
+                        </td>
+                        <td class="px-3 lg:px-6 py-4 whitespace-nowrap">
+                            <input type="number" 
+                                   value="${item.safetyStock || 5}" 
+                                   min="0" 
+                                   onchange="updateSafetyStock(${actualIndex}, this.value)"
+                                   class="safety-stock-input w-16 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   disabled
+                                   style="display: none;">
+                            <span class="safety-stock-display text-sm text-gray-900">${item.safetyStock || 5}</span>
                         </td>
                     </tr>
                 `;
@@ -1096,7 +1167,7 @@
             // 手機版卡片
             mobileList.innerHTML = itemsToRender.map((item, originalIndex) => {
                 // 找到原始索引
-                const actualIndex = items.findIndex(i => i.name === item.name && i.category === item.category && i.quantity === item.quantity);
+                const actualIndex = items.findIndex(i => i.name === item.name && i.category === item.category);
                 const categoryName = item.category ? item.category.replace(/^[A-Z]-/, '') : '其他';
                 return `
                 <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
@@ -1111,16 +1182,27 @@
                                     </span>
                                 </div>
                                 <div class="text-right ml-2">
-                                    <div class="text-lg font-bold ${item.quantity === 0 ? 'text-red-600' : item.quantity < 5 ? 'text-orange-600' : 'text-green-600'}">${item.quantity}</div>
+                                    <div class="text-lg font-bold ${item.quantity === 0 ? 'text-red-600' : item.quantity <= (item.safetyStock || 5) ? 'text-orange-600' : 'text-green-600'}">${item.quantity}</div>
                                     <div class="text-xs text-gray-500">${item.unit}</div>
                                 </div>
                             </div>
                             
-                            <div class="space-y-1 text-sm text-gray-600">
+                            <div class="space-y-2 text-sm text-gray-600">
                                 ${item.notes ? `<div class="text-xs text-gray-500 line-clamp-2">${item.notes}</div>` : ''}
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-gray-500">安全庫存量:</span>
+                                    <input type="number" 
+                                           value="${item.safetyStock || 5}" 
+                                           min="0" 
+                                           onchange="updateSafetyStock(${actualIndex}, this.value)"
+                                           class="safety-stock-input w-12 border border-gray-300 rounded px-1 py-0.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                           disabled
+                                           style="display: none;">
+                                    <span class="safety-stock-display text-xs text-gray-900">${item.safetyStock || 5}</span>
+                                </div>
                             </div>
                             
-                            ${item.quantity === 0 ? '<div class="text-xs text-red-500 mt-1">發送完畢</div>' : item.quantity < 5 ? '<div class="text-xs text-orange-500 mt-1">庫存不足</div>' : ''}
+                            ${item.quantity === 0 ? '<div class="text-xs text-red-500 mt-1">發送完畢</div>' : item.quantity <= (item.safetyStock || 5) ? '<div class="text-xs text-orange-500 mt-1">庫存不足</div>' : ''}
                         </div>
                     </div>
                 </div>
@@ -1316,7 +1398,7 @@
 
             items.forEach(item => {
                 // 計算低庫存
-                if (item.quantity < 5) {
+                if (item.quantity > 0 && item.quantity <= (item.safetyStock || 5)) {
                     lowStock++;
                 }
 
@@ -1347,36 +1429,83 @@
                 return;
             }
 
-            const csvContent = "data:text/csv;charset=utf-8," 
-                + "物資名稱,國際條碼,單位,數量,最後更新,備註\n"
+            // 建立 CSV 內容
+            const csvContent = "物資名稱,國際條碼,單位,數量,最後更新,備註\n"
                 + items.map(item => `${item.name},${item.barcode || ''},${item.unit},${item.quantity},${item.lastUpdated},"${item.notes || ''}"`).join("\n");
 
-            const encodedUri = encodeURI(csvContent);
+            // 加入 BOM 以確保 Excel 正確識別 UTF-8 編碼
+            const BOM = '\uFEFF';
+            const csvWithBOM = BOM + csvContent;
+
+            // 建立 Blob 並下載
+            const blob = new Blob([csvWithBOM], { type: 'text/csv;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
             const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
+            link.setAttribute("href", url);
             link.setAttribute("download", `物資清單_${new Date().toLocaleDateString('zh-TW')}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
         }
 
         // 列印捐贈收據
         function printReceipt() {
-            // 篩選出捐贈類型的物資
-            const donationItems = items.filter(item => {
-                return item.operations && item.operations.some(op => 
-                    op.type === 'donation' || op.type === 'corporate' || op.type === 'designated'
-                );
+            // 收集所有捐贈紀錄
+            let allDonationRecords = [];
+            items.forEach(item => {
+                if (item.operations) {
+                    item.operations.forEach(op => {
+                        if (op.type === 'donation' || op.type === 'corporate' || op.type === 'designated') {
+                            let donor = '未記錄';
+                            let donorPhone = '';
+                            let donorAddress = '';
+                            
+                            if (op.notes) {
+                                const match = op.notes.match(/捐贈者：(.+?)(?:\s*-\s*|$)/);
+                                if (match) {
+                                    const donorInfo = match[1];
+                                    // 嘗試解析電話和地址
+                                    const phoneMatch = donorInfo.match(/\(([^)]+)\)/);
+                                    if (phoneMatch) {
+                                        donorPhone = phoneMatch[1];
+                                        donor = donorInfo.replace(/\s*\([^)]+\)/, '');
+                                    } else {
+                                        donor = donorInfo;
+                                    }
+                                    
+                                    // 嘗試解析地址
+                                    const addressMatch = donorInfo.match(/\s*-\s*(.+)$/);
+                                    if (addressMatch) {
+                                        donorAddress = addressMatch[1];
+                                        donor = donor.replace(/\s*-\s*.+$/, '');
+                                    }
+                                }
+                            }
+                            
+                            allDonationRecords.push({
+                                date: op.date,
+                                itemName: item.name,
+                                quantity: op.quantity,
+                                unit: item.unit,
+                                donor: donor,
+                                donorPhone: donorPhone,
+                                donorAddress: donorAddress,
+                                notes: item.notes || '',
+                                selected: false
+                            });
+                        }
+                    });
+                }
             });
 
-            if (donationItems.length === 0) {
+            if (allDonationRecords.length === 0) {
                 alert('目前沒有捐贈物資可以列印收據');
                 return;
             }
 
-            // 建立收據內容
-            const receiptWindow = window.open('', '_blank');
-            const currentDate = new Date().toLocaleDateString('zh-TW');
+            // 開啟選取視窗
+            openReceiptSelectionModal(allDonationRecords);
             
             receiptWindow.document.write(`
                 <!DOCTYPE html>
@@ -1895,19 +2024,23 @@
             // 按日期排序
             allRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-            const csvContent = "data:text/csv;charset=utf-8," 
-                + "捐贈日期,物資名稱,捐贈數量,單位,捐贈類型,捐贈者,備註\n"
+            const csvContent = "捐贈日期,物資名稱,捐贈數量,單位,捐贈類型,捐贈者,備註\n"
                 + allRecords.map(record => 
                     `${record.date},${record.itemName},${record.quantity},${record.unit},"${record.type}","${record.donor}","${record.notes}"`
                 ).join("\n");
 
-            const encodedUri = encodeURI(csvContent);
+            // 加入 BOM 以確保 Excel 正確識別 UTF-8 編碼
+            const BOM = '\uFEFF';
+            const csvWithBOM = BOM + csvContent;
+            const blob = new Blob([csvWithBOM], { type: 'text/csv;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
             const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
+            link.setAttribute("href", url);
             link.setAttribute("download", `物資捐贈紀錄_${new Date().toLocaleDateString('zh-TW')}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
         }
 
         // 渲染發放紀錄
@@ -2058,19 +2191,23 @@
             // 按日期排序
             allRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-            const csvContent = "data:text/csv;charset=utf-8," 
-                + "領取日期,物資名稱,領取數量,單位,領取單位,聯絡電話,用途備註\n"
+            const csvContent = "領取日期,物資名稱,領取數量,單位,領取單位,聯絡電話,用途備註\n"
                 + allRecords.map(record => 
                     `${record.date},${record.itemName},${record.quantity},${record.unit},"${record.recipientUnit}","${record.recipientPhone}","${record.pickupNotes}"`
                 ).join("\n");
 
-            const encodedUri = encodeURI(csvContent);
+            // 加入 BOM 以確保 Excel 正確識別 UTF-8 編碼
+            const BOM = '\uFEFF';
+            const csvWithBOM = BOM + csvContent;
+            const blob = new Blob([csvWithBOM], { type: 'text/csv;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
             const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
+            link.setAttribute("href", url);
             link.setAttribute("download", `物資領取紀錄_${new Date().toLocaleDateString('zh-TW')}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
         }
 
         // 庫存調整功能
@@ -2187,12 +2324,7 @@
             alert(`庫存調整成功！\n物資：${item.name}\n調整數量：${adjustAmount > 0 ? '+' : ''}${adjustAmount}\n新庫存：${newQuantity}`);
         }
 
-        // 點擊 Modal 外部關閉
-        document.getElementById('itemModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
-        });
+        // 點擊 Modal 外部關閉（已移除新增物資Modal的此功能）
 
         document.getElementById('pickupModal').addEventListener('click', function(e) {
             if (e.target === this) {
@@ -2352,7 +2484,7 @@
             document.getElementById('categoryFilter').value = '';
             document.getElementById('stockFilter').value = '';
             currentFilters = { category: '', stock: '' };
-            currentSort = { field: null, direction: 'asc' };
+            currentSort = { field: 'name', direction: 'asc' }; // 重置為預設排序
             renderItems();
         }
 
@@ -2390,10 +2522,10 @@
             if (currentFilters.stock) {
                 switch (currentFilters.stock) {
                     case 'available':
-                        filteredItems = filteredItems.filter(item => item.quantity >= 5);
+                        filteredItems = filteredItems.filter(item => item.quantity > (item.safetyStock || 5));
                         break;
                     case 'low':
-                        filteredItems = filteredItems.filter(item => item.quantity > 0 && item.quantity < 5);
+                        filteredItems = filteredItems.filter(item => item.quantity > 0 && item.quantity <= (item.safetyStock || 5));
                         break;
                     case 'empty':
                         filteredItems = filteredItems.filter(item => item.quantity === 0);
@@ -2665,6 +2797,55 @@
             alert(`批量領取成功！\n成功領取 ${successCount}/${totalItems} 項物資\n領取單位：${finalUnit}`);
         }
 
+        // 切換安全庫存量編輯模式
+        function toggleSafetyStockEdit() {
+            safetyStockEditMode = document.getElementById('editSafetyStockToggle').checked;
+            
+            // 切換所有安全庫存量輸入框的狀態
+            const inputs = document.querySelectorAll('.safety-stock-input');
+            const displays = document.querySelectorAll('.safety-stock-display');
+            
+            inputs.forEach(input => {
+                input.disabled = !safetyStockEditMode;
+                input.style.display = safetyStockEditMode ? 'inline-block' : 'none';
+            });
+            
+            displays.forEach(display => {
+                display.style.display = safetyStockEditMode ? 'none' : 'inline-block';
+            });
+        }
+
+        // 更新安全庫存量功能
+        function updateSafetyStock(itemIndex, newValue) {
+            if (!safetyStockEditMode) {
+                return; // 如果不在編輯模式，不允許更新
+            }
+            
+            const safetyStock = parseInt(newValue);
+            
+            if (isNaN(safetyStock) || safetyStock < 0) {
+                alert('請輸入有效的安全庫存量（不能小於0）');
+                renderItems(); // 重新渲染以恢復原值
+                return;
+            }
+            
+            // 更新物資的安全庫存量
+            items[itemIndex].safetyStock = safetyStock;
+            items[itemIndex].lastUpdated = new Date().toLocaleDateString('zh-TW');
+            
+            // 儲存資料
+            localStorage.setItem('charityItems', JSON.stringify(items));
+            
+            // 更新統計（因為低庫存計算會改變）
+            updateStats();
+            
+            // 更新對應的顯示文字
+            const displayElement = document.querySelector(`.safety-stock-display[data-index="${itemIndex}"]`);
+            if (displayElement) {
+                displayElement.textContent = safetyStock;
+            }
+        }
+
         // 捐贈紀錄編輯功能
         function editDonationRecord(itemIndex, operationIndex) {
             const item = items[itemIndex];
@@ -2773,6 +2954,206 @@
             alert('捐贈紀錄已刪除，庫存已相應調整！');
         }
 
+        // 收據選取功能
+        function openReceiptSelectionModal(donationRecords) {
+            receiptRecords = donationRecords;
+            const modal = document.getElementById('receiptSelectionModal');
+            const tbody = document.getElementById('receiptSelectionTable');
+            
+            tbody.innerHTML = donationRecords.map((record, index) => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <input type="checkbox" 
+                               id="receipt_${index}" 
+                               onchange="toggleReceiptSelection(${index})"
+                               class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.date}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${record.itemName}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.quantity} ${record.unit}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.donor}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.donorPhone}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900 max-w-xs truncate" title="${record.donorAddress}">${record.donorAddress}</td>
+                </tr>
+            `).join('');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeReceiptSelectionModal() {
+            const modal = document.getElementById('receiptSelectionModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function toggleReceiptSelection(index) {
+            const checkbox = document.getElementById(`receipt_${index}`);
+            receiptRecords[index].selected = checkbox.checked;
+        }
+
+        function selectAllReceipts() {
+            receiptRecords.forEach((record, index) => {
+                record.selected = true;
+                const checkbox = document.getElementById(`receipt_${index}`);
+                if (checkbox) checkbox.checked = true;
+            });
+        }
+
+        function clearAllReceipts() {
+            receiptRecords.forEach((record, index) => {
+                record.selected = false;
+                const checkbox = document.getElementById(`receipt_${index}`);
+                if (checkbox) checkbox.checked = false;
+            });
+        }
+
+        function generateSelectedReceipts() {
+            const selectedRecords = receiptRecords.filter(record => record.selected);
+            
+            if (selectedRecords.length === 0) {
+                alert('請至少選擇一筆捐贈紀錄');
+                return;
+            }
+
+            // 按捐贈者分組
+            const groupedByDonor = {};
+            selectedRecords.forEach(record => {
+                const key = `${record.donor}_${record.donorPhone}_${record.donorAddress}`;
+                if (!groupedByDonor[key]) {
+                    groupedByDonor[key] = {
+                        donor: record.donor,
+                        donorPhone: record.donorPhone,
+                        donorAddress: record.donorAddress,
+                        items: []
+                    };
+                }
+                groupedByDonor[key].items.push(record);
+            });
+
+            // 為每個捐贈者生成收據
+            Object.values(groupedByDonor).forEach(donorGroup => {
+                generateReceiptForDonor(donorGroup);
+            });
+
+            closeReceiptSelectionModal();
+        }
+
+        function generateReceiptForDonor(donorGroup) {
+            const receiptWindow = window.open('', '_blank');
+            const currentDate = new Date().toLocaleDateString('zh-TW');
+            
+            receiptWindow.document.write(`
+                <!DOCTYPE html>
+                <html lang="zh-TW">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>愛心物資捐贈收據</title>
+                    <style>
+                        body { font-family: 'Microsoft JhengHei', sans-serif; margin: 40px; line-height: 1.6; }
+                        .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px; }
+                        .title { font-size: 24px; font-weight: bold; color: #2563eb; margin-bottom: 10px; }
+                        .subtitle { font-size: 16px; color: #666; }
+                        .info-section { margin: 20px 0; }
+                        .info-row { display: flex; margin: 10px 0; }
+                        .label { font-weight: bold; width: 120px; }
+                        .value { flex: 1; border-bottom: 1px dotted #ccc; padding-bottom: 2px; }
+                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+                        th { background-color: #f8f9fa; font-weight: bold; }
+                        .footer { margin-top: 40px; text-align: center; font-size: 14px; color: #666; }
+                        .signature { margin-top: 50px; display: flex; justify-content: space-between; }
+                        .sign-box { text-align: center; }
+                        .sign-line { border-bottom: 1px solid #333; width: 150px; margin: 20px auto; }
+                        @media print { body { margin: 20px; } }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <div class="title">愛心物資捐贈收據</div>
+                        <div class="subtitle">DONATION RECEIPT</div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <div class="info-row">
+                            <span class="label">收據編號：</span>
+                            <span class="value">R${Date.now().toString().slice(-8)}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">開立日期：</span>
+                            <span class="value">${currentDate}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">捐贈者姓名：</span>
+                            <span class="value">${donorGroup.donor}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">聯絡電話：</span>
+                            <span class="value">${donorGroup.donorPhone}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">地址：</span>
+                            <span class="value">${donorGroup.donorAddress}</span>
+                        </div>
+                    </div>
+
+                    <h3>捐贈物資明細</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>物資名稱</th>
+                                <th>數量</th>
+                                <th>單位</th>
+                                <th>捐贈日期</th>
+                                <th>備註</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${donorGroup.items.map(item => `
+                                <tr>
+                                    <td>${item.itemName}</td>
+                                    <td>${item.quantity}</td>
+                                    <td>${item.unit}</td>
+                                    <td>${item.date}</td>
+                                    <td>${item.notes}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+
+                    <div class="info-section">
+                        <p><strong>感謝您的愛心捐贈！</strong></p>
+                        <p>您所捐贈的物資將用於幫助需要的弱勢族群，讓愛心傳遞到社會每個角落。</p>
+                        <p>本收據僅作為捐贈證明，如需正式捐贈證明書，請洽詢相關單位。</p>
+                    </div>
+
+                    <div class="signature">
+                        <div class="sign-box">
+                            <div class="sign-line"></div>
+                            <div>捐贈者簽名</div>
+                        </div>
+                        <div class="sign-box">
+                            <div class="sign-line"></div>
+                            <div>機構代表簽名</div>
+                        </div>
+                    </div>
+
+                    <div class="footer">
+                        <p>苗栗社福促進協會物資管理平台 · 列印日期：${currentDate}</p>
+                        <p>此為系統自動產生的收據範本，實際使用請依各機構規定調整</p>
+                    </div>
+                </body>
+                </html>
+            `);
+            
+            receiptWindow.document.close();
+            
+            // 等待內容載入後自動列印
+            setTimeout(() => {
+                receiptWindow.print();
+            }, 500);
+        }
+
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'969677ee8052f24c',t:'MTc1NDIzMDk2MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96f0e332e21cf1d4',t:'MTc1NTE3OTA3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
