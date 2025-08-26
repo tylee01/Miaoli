@@ -6,6 +6,7 @@
     <title>苗栗社福促進協會物資管理平台</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@zxing/library@latest"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
         tailwind.config = {
             theme: {
@@ -23,345 +24,401 @@
 </head>
 <body class="bg-gradient-to-br from-green-50 to-blue-100 min-h-screen font-chinese">
 
-
-    <div class="container mx-auto px-4 py-8">
-        <!-- 標題 -->
-        <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-gray-800 mb-2">苗栗社福促進協會物資管理平台</h1>
-            <p class="text-gray-600">T-Cross x苗栗物資共享站 合作開發</p>
-        </div>
-
-        <!-- 操作按鈕區 -->
-        <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6">
-            <!-- 手機版：垂直排列，桌面版：水平排列 -->
-            <div class="flex flex-col lg:flex-row gap-4 lg:justify-between lg:items-center">
-                <!-- 主要操作按鈕 -->
-                <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-3">
-                    <button onclick="openModal('add')" class="bg-green-600 hover:bg-green-700 text-white px-3 sm:px-6 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                        </svg>
-                        <span class="hidden sm:inline">新增物資</span>
-                        <span class="sm:hidden">新增</span>
-                    </button>
-                    <button onclick="openAddInventoryItemModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 sm:px-6 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                        </svg>
-                        <span class="hidden sm:inline">新增庫存品項</span>
-                        <span class="sm:hidden">品項</span>
-                    </button>
-                    <button onclick="openBatchPickupModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-6 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
-                        </svg>
-                        <span class="hidden sm:inline">批量物資領取</span>
-                        <span class="sm:hidden">批量領取</span>
-                    </button>
-
-                    <button onclick="exportData()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-6 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        <span class="hidden sm:inline">匯出報表</span>
-                        <span class="sm:hidden">匯出</span>
-                    </button>
-                    <button onclick="openStockAdjustmentModal()" class="bg-purple-600 hover:bg-purple-700 text-white px-3 sm:px-6 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                        </svg>
-                        <span class="hidden sm:inline">庫存調整</span>
-                        <span class="sm:hidden">調整</span>
-                    </button>
-                    <button onclick="printReceipt()" class="col-span-2 sm:col-span-1 bg-orange-600 hover:bg-orange-700 text-white px-3 sm:px-6 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
-                        </svg>
-                        <span class="hidden sm:inline">捐贈物品收據列印</span>
-                        <span class="sm:hidden">列印收據</span>
-                    </button>
+    <!-- 登入頁面 -->
+    <div id="loginPage" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-8">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">苗栗社福促進協會</h1>
+                <h2 class="text-xl text-gray-600 mb-4">物資管理平台</h2>
+                <p class="text-sm text-gray-500">請使用 Google 帳號登入</p>
+            </div>
+            
+            <div class="space-y-6">
+                <div id="g_id_onload"
+                     data-client_id="624723498968-8sgcsno9fr11rs7o7pk620b3kb1qso0q.apps.googleusercontent.com"
+                     data-callback="handleCredentialResponse"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin" 
+                     data-type="standard"
+                     data-size="large"
+                     data-theme="outline"
+                     data-text="sign_in_with"
+                     data-shape="rectangular"
+                     data-logo_alignment="left"
+                     data-width="100%">
                 </div>
                 
-                <!-- 搜尋區域 -->
-                <div class="flex gap-2 mt-4 lg:mt-0">
-                    <input type="text" id="searchInput" placeholder="搜尋物資..." class="border border-gray-300 rounded-lg px-3 sm:px-4 py-2 flex-1 sm:w-48 lg:w-64 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm sm:text-base">
-                    <button onclick="searchItems()" class="bg-gray-600 hover:bg-gray-700 text-white px-3 sm:px-4 py-2 rounded-lg transition-colors duration-200 flex-shrink-0">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                    </button>
+                <div class="text-center">
+                    <p class="text-xs text-gray-500">
+                        登入即表示您同意使用條款<br>
+                        僅限授權人員使用此系統
+                    </p>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- 物資統計 -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6">
-            <div class="bg-white rounded-lg shadow-md p-3 sm:p-6">
-                <div class="flex items-center">
-                    <div class="p-2 sm:p-3 rounded-full bg-green-100 text-green-600 flex-shrink-0">
-                        <svg class="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                        </svg>
+    <!-- 主要應用程式 -->
+    <div id="mainApp" class="hidden">
+        <!-- 頂部導航欄 -->
+        <nav class="bg-white shadow-sm border-b border-gray-200">
+            <div class="container mx-auto px-4 py-3">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-4">
+                        <h1 class="text-xl font-bold text-gray-800">物資管理平台</h1>
+                        <span id="userRole" class="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full"></span>
                     </div>
-                    <div class="ml-2 sm:ml-4 min-w-0">
-                        <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">總物資種類</p>
-                        <p class="text-lg sm:text-2xl font-bold text-gray-900" id="totalItems">0</p>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-3 sm:p-6">
-                <div class="flex items-center">
-                    <div class="p-2 sm:p-3 rounded-full bg-blue-100 text-blue-600 flex-shrink-0">
-                        <svg class="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-2 sm:ml-4 min-w-0">
-                        <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">本月捐贈</p>
-                        <p class="text-lg sm:text-2xl font-bold text-gray-900" id="monthlyDonation">0</p>
+                    <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-2">
+                            <img id="userAvatar" src="" alt="用戶頭像" class="w-8 h-8 rounded-full">
+                            <span id="userName" class="text-sm font-medium text-gray-700"></span>
+                        </div>
+                        <button onclick="logout()" class="text-sm text-red-600 hover:text-red-800 font-medium">登出</button>
                     </div>
                 </div>
             </div>
-            <div class="bg-white rounded-lg shadow-md p-3 sm:p-6">
-                <div class="flex items-center">
-                    <div class="p-2 sm:p-3 rounded-full bg-orange-100 text-orange-600 flex-shrink-0">
-                        <svg class="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-2 sm:ml-4 min-w-0">
-                        <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">本月發放</p>
-                        <p class="text-lg sm:text-2xl font-bold text-gray-900" id="monthlyDistribution">0</p>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-3 sm:p-6">
-                <div class="flex items-center">
-                    <div class="p-2 sm:p-3 rounded-full bg-red-100 text-red-600 flex-shrink-0">
-                        <svg class="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-2 sm:ml-4 min-w-0">
-                        <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">庫存不足</p>
-                        <p class="text-lg sm:text-2xl font-bold text-gray-900" id="lowStock">0</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </nav>
 
-        <!-- 物資列表 -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
-            <div class="px-4 sm:px-6 py-4 border-b border-gray-200">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-                    <h2 class="text-lg sm:text-xl font-semibold text-gray-800">物資管理</h2>
+        <div class="container mx-auto px-4 py-8">
+            <!-- 標題 -->
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-gray-800 mb-2">苗栗社福促進協會物資管理平台</h1>
+                <p class="text-gray-600">T-Cross x苗栗物資共享站 合作開發</p>
+            </div>
+
+            <!-- 操作按鈕區 -->
+            <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6">
+                <!-- 手機版：垂直排列，桌面版：水平排列 -->
+                <div class="flex flex-col lg:flex-row gap-4 lg:justify-between lg:items-center">
+                    <!-- 主要操作按鈕 -->
+                    <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-3">
+                        <button id="addItemBtn" onclick="openModal('add')" class="bg-green-600 hover:bg-green-700 text-white px-3 sm:px-6 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            <span class="hidden sm:inline">新增物資</span>
+                            <span class="sm:hidden">新增</span>
+                        </button>
+                        <button id="addInventoryBtn" onclick="openAddInventoryItemModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 sm:px-6 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                            </svg>
+                            <span class="hidden sm:inline">新增庫存品項</span>
+                            <span class="sm:hidden">品項</span>
+                        </button>
+                        <button id="batchPickupBtn" onclick="openBatchPickupModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-6 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                            </svg>
+                            <span class="hidden sm:inline">批量物資領取</span>
+                            <span class="sm:hidden">批量領取</span>
+                        </button>
+
+                        <button id="exportBtn" onclick="exportData()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-6 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <span class="hidden sm:inline">匯出報表</span>
+                            <span class="sm:hidden">匯出</span>
+                        </button>
+                        <button id="stockAdjustBtn" onclick="openStockAdjustmentModal()" class="bg-purple-600 hover:bg-purple-700 text-white px-3 sm:px-6 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                            <span class="hidden sm:inline">庫存調整</span>
+                            <span class="sm:hidden">調整</span>
+                        </button>
+                        <button id="printReceiptBtn" onclick="printReceipt()" class="col-span-2 sm:col-span-1 bg-orange-600 hover:bg-orange-700 text-white px-3 sm:px-6 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                            </svg>
+                            <span class="hidden sm:inline">捐贈物品收據列印</span>
+                            <span class="sm:hidden">列印收據</span>
+                        </button>
+                    </div>
+                    
+                    <!-- 搜尋區域 -->
+                    <div class="flex gap-2 mt-4 lg:mt-0">
+                        <input type="text" id="searchInput" placeholder="搜尋物資..." class="border border-gray-300 rounded-lg px-3 sm:px-4 py-2 flex-1 sm:w-48 lg:w-64 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm sm:text-base">
+                        <button onclick="searchItems()" class="bg-gray-600 hover:bg-gray-700 text-white px-3 sm:px-4 py-2 rounded-lg transition-colors duration-200 flex-shrink-0">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
-                
-                <!-- 標籤頁切換 -->
-                <div class="flex space-x-1 bg-gray-100 p-1 rounded-lg">
-                    <button id="inventoryTab" onclick="switchTab('inventory')" class="flex-1 px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-md transition-colors duration-200 bg-white text-blue-600 shadow-sm">
-                        <div class="flex items-center justify-center gap-1 sm:gap-2">
-                            <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            </div>
+
+            <!-- 物資統計 -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6">
+                <div class="bg-white rounded-lg shadow-md p-3 sm:p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 sm:p-3 rounded-full bg-green-100 text-green-600 flex-shrink-0">
+                            <svg class="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                             </svg>
-                            <span class="hidden sm:inline">物資庫存清單</span>
-                            <span class="sm:hidden">庫存</span>
                         </div>
-                    </button>
-                    <button id="donationTab" onclick="switchTab('donation')" class="flex-1 px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-md transition-colors duration-200 text-gray-500 hover:text-gray-700">
-                        <div class="flex items-center justify-center gap-1 sm:gap-2">
-                            <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                            </svg>
-                            <span class="hidden sm:inline">物資捐贈紀錄</span>
-                            <span class="sm:hidden">捐贈</span>
+                        <div class="ml-2 sm:ml-4 min-w-0">
+                            <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">總物資種類</p>
+                            <p class="text-lg sm:text-2xl font-bold text-gray-900" id="totalItems">0</p>
                         </div>
-                    </button>
-                    <button id="recordsTab" onclick="switchTab('records')" class="flex-1 px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-md transition-colors duration-200 text-gray-500 hover:text-gray-700">
-                        <div class="flex items-center justify-center gap-1 sm:gap-2">
-                            <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                            </svg>
-                            <span class="hidden sm:inline">物資發放紀錄</span>
-                            <span class="sm:hidden">發放</span>
-                        </div>
-                    </button>
-                </div>
-            </div>
-            <div id="normalView" class="overflow-x-auto">
-                <!-- 手機版卡片式顯示 -->
-                <div class="block sm:hidden" id="mobileView">
-                    <div id="mobileItemsList" class="space-y-3 p-4">
-                        <!-- 手機版物資卡片將在這裡動態生成 -->
                     </div>
                 </div>
-                
-                <!-- 桌面版表格顯示 -->
-                <div class="hidden sm:block">
-                    <!-- 篩選控制區 -->
-                    <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                        <div class="flex flex-wrap gap-4 items-center">
-                            <div class="flex items-center gap-2">
-                                <label class="text-sm font-medium text-gray-700">類別篩選：</label>
-                                <select id="categoryFilter" onchange="applyFilters()" class="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <option value="">全部類別</option>
-                                </select>
+                <div class="bg-white rounded-lg shadow-md p-3 sm:p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 sm:p-3 rounded-full bg-blue-100 text-blue-600 flex-shrink-0">
+                            <svg class="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-2 sm:ml-4 min-w-0">
+                            <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">本月捐贈</p>
+                            <p class="text-lg sm:text-2xl font-bold text-gray-900" id="monthlyDonation">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-3 sm:p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 sm:p-3 rounded-full bg-orange-100 text-orange-600 flex-shrink-0">
+                            <svg class="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-2 sm:ml-4 min-w-0">
+                            <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">本月發放</p>
+                            <p class="text-lg sm:text-2xl font-bold text-gray-900" id="monthlyDistribution">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-3 sm:p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 sm:p-3 rounded-full bg-red-100 text-red-600 flex-shrink-0">
+                            <svg class="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-2 sm:ml-4 min-w-0">
+                            <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">庫存不足</p>
+                            <p class="text-lg sm:text-2xl font-bold text-gray-900" id="lowStock">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 物資列表 -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="px-4 sm:px-6 py-4 border-b border-gray-200">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                        <h2 class="text-lg sm:text-xl font-semibold text-gray-800">物資管理</h2>
+                    </div>
+                    
+                    <!-- 標籤頁切換 -->
+                    <div class="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+                        <button id="inventoryTab" onclick="switchTab('inventory')" class="flex-1 px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-md transition-colors duration-200 bg-white text-blue-600 shadow-sm">
+                            <div class="flex items-center justify-center gap-1 sm:gap-2">
+                                <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                </svg>
+                                <span class="hidden sm:inline">物資庫存清單</span>
+                                <span class="sm:hidden">庫存</span>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <label class="text-sm font-medium text-gray-700">庫存狀態：</label>
-                                <select id="stockFilter" onchange="applyFilters()" class="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <option value="">全部狀態</option>
-                                    <option value="available">有庫存</option>
-                                    <option value="low">庫存不足</option>
-                                    <option value="empty">發送完畢</option>
-                                </select>
+                        </button>
+                        <button id="donationTab" onclick="switchTab('donation')" class="flex-1 px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-md transition-colors duration-200 text-gray-500 hover:text-gray-700">
+                            <div class="flex items-center justify-center gap-1 sm:gap-2">
+                                <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                                <span class="hidden sm:inline">物資捐贈紀錄</span>
+                                <span class="sm:hidden">捐贈</span>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <input type="checkbox" id="editSafetyStockToggle" onchange="toggleSafetyStockEdit()" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                                <label for="editSafetyStockToggle" class="text-sm font-medium text-gray-700">編輯安全庫存量</label>
+                        </button>
+                        <button id="recordsTab" onclick="switchTab('records')" class="flex-1 px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-md transition-colors duration-200 text-gray-500 hover:text-gray-700">
+                            <div class="flex items-center justify-center gap-1 sm:gap-2">
+                                <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                                <span class="hidden sm:inline">物資發放紀錄</span>
+                                <span class="sm:hidden">發放</span>
                             </div>
-                            <button onclick="clearFilters()" class="text-sm text-blue-600 hover:text-blue-800 underline">清除篩選</button>
+                        </button>
+                    </div>
+                </div>
+                <div id="normalView" class="overflow-x-auto">
+                    <!-- 手機版卡片式顯示 -->
+                    <div class="block sm:hidden" id="mobileView">
+                        <div id="mobileItemsList" class="space-y-3 p-4">
+                            <!-- 手機版物資卡片將在這裡動態生成 -->
                         </div>
                     </div>
                     
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th onclick="sortTable('category')" class="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none">
-                                    <div class="flex items-center gap-1">
-                                        品項類別
-                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
-                                        </svg>
-                                    </div>
-                                </th>
-                                <th onclick="sortTable('name')" class="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none">
-                                    <div class="flex items-center gap-1">
-                                        物資名稱
-                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
-                                        </svg>
-                                    </div>
-                                </th>
-                                <th onclick="sortTable('quantity')" class="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none">
-                                    <div class="flex items-center gap-1">
-                                        數量
-                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
-                                        </svg>
-                                    </div>
-                                </th>
-                                <th class="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    安全庫存量
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody id="itemsTable" class="bg-white divide-y divide-gray-200">
-                            <!-- 動態生成的物資列表 -->
-                        </tbody>
-                    </table>
+                    <!-- 桌面版表格顯示 -->
+                    <div class="hidden sm:block">
+                        <!-- 篩選控制區 -->
+                        <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                            <div class="flex flex-wrap gap-4 items-center">
+                                <div class="flex items-center gap-2">
+                                    <label class="text-sm font-medium text-gray-700">類別篩選：</label>
+                                    <select id="categoryFilter" onchange="applyFilters()" class="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option value="">全部類別</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <label class="text-sm font-medium text-gray-700">庫存狀態：</label>
+                                    <select id="stockFilter" onchange="applyFilters()" class="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option value="">全部狀態</option>
+                                        <option value="available">有庫存</option>
+                                        <option value="low">庫存不足</option>
+                                        <option value="empty">發送完畢</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" id="editSafetyStockToggle" onchange="toggleSafetyStockEdit()" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="editSafetyStockToggle" class="text-sm font-medium text-gray-700">編輯安全庫存量</label>
+                                </div>
+                                <button onclick="clearFilters()" class="text-sm text-blue-600 hover:text-blue-800 underline">清除篩選</button>
+                            </div>
+                        </div>
+                        
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th onclick="sortTable('category')" class="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none">
+                                        <div class="flex items-center gap-1">
+                                            品項類別
+                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+                                            </svg>
+                                        </div>
+                                    </th>
+                                    <th onclick="sortTable('name')" class="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none">
+                                        <div class="flex items-center gap-1">
+                                            物資名稱
+                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+                                            </svg>
+                                        </div>
+                                    </th>
+                                    <th onclick="sortTable('quantity')" class="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none">
+                                        <div class="flex items-center gap-1">
+                                            數量
+                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+                                            </svg>
+                                        </div>
+                                    </th>
+                                    <th class="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        安全庫存量
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="itemsTable" class="bg-white divide-y divide-gray-200">
+                                <!-- 動態生成的物資列表 -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
 
-            
-            <!-- 捐贈紀錄區域 -->
-            <div id="donationView" class="hidden">
-                <div class="p-4 sm:p-6 border-b border-gray-200">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <h3 class="text-lg font-semibold text-gray-800">物資捐贈紀錄</h3>
-                        <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                            <input type="text" id="donationSearchInput" placeholder="搜尋物資或捐贈者..." class="border border-gray-300 rounded-lg px-3 py-2 flex-1 sm:w-48 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-                            <div class="flex gap-2">
-                                <button onclick="searchDonationRecords()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 sm:px-4 py-2 rounded-lg transition-colors duration-200 flex-shrink-0">
-                                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                    </svg>
-                                </button>
-                                <button onclick="exportDonationRecords()" class="bg-green-600 hover:bg-green-700 text-white px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-1 sm:gap-2 text-sm">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                    </svg>
-                                    <span class="hidden sm:inline">匯出紀錄</span>
-                                    <span class="sm:hidden">匯出</span>
-                                </button>
+                
+                <!-- 捐贈紀錄區域 -->
+                <div id="donationView" class="hidden">
+                    <div class="p-4 sm:p-6 border-b border-gray-200">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <h3 class="text-lg font-semibold text-gray-800">物資捐贈紀錄</h3>
+                            <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                                <input type="text" id="donationSearchInput" placeholder="搜尋物資或捐贈者..." class="border border-gray-300 rounded-lg px-3 py-2 flex-1 sm:w-48 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                                <div class="flex gap-2">
+                                    <button onclick="searchDonationRecords()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 sm:px-4 py-2 rounded-lg transition-colors duration-200 flex-shrink-0">
+                                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                        </svg>
+                                    </button>
+                                    <button onclick="exportDonationRecords()" class="bg-green-600 hover:bg-green-700 text-white px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-1 sm:gap-2 text-sm">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        <span class="hidden sm:inline">匯出紀錄</span>
+                                        <span class="sm:hidden">匯出</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">捐贈日期</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">物資名稱</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">捐贈數量</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">捐贈類型</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">捐贈者</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">備註</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="donationRecordsTable" class="bg-white divide-y divide-gray-200">
+                                <!-- 捐贈紀錄將在這裡動態生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="noDonationMessage" class="text-center py-12 hidden">
+                        <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                        <p class="text-lg font-medium text-gray-500">尚無捐贈紀錄</p>
+                        <p class="text-sm text-gray-400">當有物資被捐贈時，紀錄會顯示在這裡</p>
+                    </div>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">捐贈日期</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">物資名稱</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">捐贈數量</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">捐贈類型</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">捐贈者</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">備註</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="donationRecordsTable" class="bg-white divide-y divide-gray-200">
-                            <!-- 捐贈紀錄將在這裡動態生成 -->
-                        </tbody>
-                    </table>
-                </div>
-                <div id="noDonationMessage" class="text-center py-12 hidden">
-                    <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                    </svg>
-                    <p class="text-lg font-medium text-gray-500">尚無捐贈紀錄</p>
-                    <p class="text-sm text-gray-400">當有物資被捐贈時，紀錄會顯示在這裡</p>
-                </div>
-            </div>
-            
-            <!-- 發放紀錄區域 -->
-            <div id="recordsView" class="hidden">
-                <div class="p-4 sm:p-6 border-b border-gray-200">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <h3 class="text-lg font-semibold text-gray-800">物資發放紀錄</h3>
-                        <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                            <input type="text" id="recordSearchInput" placeholder="搜尋物資或單位..." class="border border-gray-300 rounded-lg px-3 py-2 flex-1 sm:w-48 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-                            <div class="flex gap-2">
-                                <button onclick="searchPickupRecords()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 sm:px-4 py-2 rounded-lg transition-colors duration-200 flex-shrink-0">
-                                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                    </svg>
-                                </button>
-                                <button onclick="exportPickupRecords()" class="bg-green-600 hover:bg-green-700 text-white px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-1 sm:gap-2 text-sm">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                    </svg>
-                                    <span class="hidden sm:inline">匯出紀錄</span>
-                                    <span class="sm:hidden">匯出</span>
-                                </button>
+                
+                <!-- 發放紀錄區域 -->
+                <div id="recordsView" class="hidden">
+                    <div class="p-4 sm:p-6 border-b border-gray-200">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <h3 class="text-lg font-semibold text-gray-800">物資發放紀錄</h3>
+                            <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                                <input type="text" id="recordSearchInput" placeholder="搜尋物資或單位..." class="border border-gray-300 rounded-lg px-3 py-2 flex-1 sm:w-48 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                                <div class="flex gap-2">
+                                    <button onclick="searchPickupRecords()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 sm:px-4 py-2 rounded-lg transition-colors duration-200 flex-shrink-0">
+                                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                        </svg>
+                                    </button>
+                                    <button onclick="exportPickupRecords()" class="bg-green-600 hover:bg-green-700 text-white px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-1 sm:gap-2 text-sm">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        <span class="hidden sm:inline">匯出紀錄</span>
+                                        <span class="sm:hidden">匯出</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">發放日期</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">物資名稱</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">發放數量</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">發放單位</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">聯絡電話</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">用途/備註</th>
-                            </tr>
-                        </thead>
-                        <tbody id="pickupRecordsTable" class="bg-white divide-y divide-gray-200">
-                            <!-- 領取紀錄將在這裡動態生成 -->
-                        </tbody>
-                    </table>
-                </div>
-                <div id="noRecordsMessage" class="text-center py-12 hidden">
-                    <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                    <p class="text-lg font-medium text-gray-500">尚無發放紀錄</p>
-                    <p class="text-sm text-gray-400">當有物資被發放時，紀錄會顯示在這裡</p>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">發放日期</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">物資名稱</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">發放數量</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">發放單位</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">聯絡電話</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">用途/備註</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pickupRecordsTable" class="bg-white divide-y divide-gray-200">
+                                <!-- 領取紀錄將在這裡動態生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="noRecordsMessage" class="text-center py-12 hidden">
+                        <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <p class="text-lg font-medium text-gray-500">尚無發放紀錄</p>
+                        <p class="text-sm text-gray-400">當有物資被發放時，紀錄會顯示在這裡</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -428,28 +485,14 @@
                                         <input type="number" class="item-quantity w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" required min="0" placeholder="0">
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">單位</label>
-                                        <select class="item-unit w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
-                                            <option value="包">包</option>
-                                            <option value="箱">箱</option>
-                                            <option value="個">個</option>
-                                            <option value="件">件</option>
-                                            <option value="公斤">公斤</option>
-                                            <option value="公升">公升</option>
-                                            <option value="組">組</option>
-                                            <option value="份">份</option>
-                                        </select>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">有效日期（選填）</label>
+                                        <input type="date" class="item-expiry w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">安全庫存量</label>
-                        <input type="number" id="safetyStock" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="設定安全庫存量（預設5）" value="5">
-                        <p class="text-xs text-gray-500 mt-1">當庫存低於此數量時會顯示警告</p>
-                    </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">備註</label>
                         <textarea id="itemNotes" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="其他備註資訊"></textarea>
@@ -730,8 +773,6 @@
         </div>
     </div>
 
-
-
     <!-- 新增庫存品項 Modal -->
     <div id="addInventoryItemModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
@@ -794,17 +835,28 @@
         </div>
     </div>
 
-
-
     <script>
+        // 權限控管設定
+        const ADMIN_EMAILS = [
+            'admin@yourorg.com',
+            'manager@yourorg.com'
+        ];
+        
+        const STAFF_EMAILS = [
+            'staff1@yourorg.com',
+            'staff2@yourorg.com'
+        ];
+        
         // 全域變數
-        let currentTab = 'inventory'; // 當前標籤頁
-        let currentSort = { field: 'name', direction: 'asc' }; // 排序狀態 - 預設用物資名稱排序
-        let currentFilters = { category: '', stock: '' }; // 篩選狀態
-        let selectedBatchItems = {}; // 批量領取選中的物資
-        let editingDonationRecord = null; // 正在編輯的捐贈紀錄
-        let receiptRecords = []; // 收據選取紀錄
-        let safetyStockEditMode = false; // 安全庫存量編輯模式
+        let currentUser = null;
+        let userRole = null;
+        let currentTab = 'inventory';
+        let currentSort = { field: 'name', direction: 'asc' };
+        let currentFilters = { category: '', stock: '' };
+        let selectedBatchItems = {};
+        let editingDonationRecord = null;
+        let receiptRecords = [];
+        let safetyStockEditMode = false;
         
         // 庫存品項清單
         const inventoryItemsList = [
@@ -840,7 +892,7 @@
             { category: '常用類', name: '礦泉水' }
         ];
         
-        // 物資資料存儲 - 使用完整的庫存品項清單
+        // 物資資料存儲
         let items = JSON.parse(localStorage.getItem('charityItems')) || inventoryItemsList.map(item => ({
             name: item.name,
             category: item.category,
@@ -849,6 +901,7 @@
             quantity: 0,
             safetyStock: 5,
             notes: '',
+            expiryDate: '',
             createdDate: new Date().toLocaleDateString('zh-TW', { month: '2-digit', day: '2-digit' }),
             lastUpdated: new Date().toLocaleDateString('zh-TW'),
             image: null,
@@ -859,21 +912,154 @@
         let pickupItemIndex = -1;
         let codeReader = null;
 
+        // Google 登入處理
+        function handleCredentialResponse(response) {
+            const responsePayload = decodeJwtResponse(response.credential);
+            
+            console.log("ID: " + responsePayload.sub);
+            console.log('Full Name: ' + responsePayload.name);
+            console.log('Given Name: ' + responsePayload.given_name);
+            console.log('Family Name: ' + responsePayload.family_name);
+            console.log("Image URL: " + responsePayload.picture);
+            console.log("Email: " + responsePayload.email);
+            
+            // 檢查用戶權限
+            const email = responsePayload.email;
+            let role = 'volunteer'; // 預設為志工
+            
+            if (ADMIN_EMAILS.includes(email)) {
+                role = 'admin';
+            } else if (STAFF_EMAILS.includes(email)) {
+                role = 'staff';
+            }
+            
+            // 儲存用戶資訊
+            currentUser = {
+                id: responsePayload.sub,
+                name: responsePayload.name,
+                email: responsePayload.email,
+                picture: responsePayload.picture
+            };
+            userRole = role;
+            
+            // 儲存到 localStorage
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            localStorage.setItem('userRole', role);
+            
+            // 顯示主應用程式
+            showMainApp();
+        }
+
+        function decodeJwtResponse(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        }
+
+        function showMainApp() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            
+            // 更新用戶資訊顯示
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userAvatar').src = currentUser.picture;
+            
+            // 更新角色顯示
+            const roleText = {
+                'admin': '管理員',
+                'staff': '工作人員',
+                'volunteer': '志工'
+            };
+            document.getElementById('userRole').textContent = roleText[userRole];
+            
+            // 根據權限調整介面
+            adjustUIForRole();
+            
+            // 初始化應用程式
+            renderItems();
+            updateStats();
+            populateInventorySelect();
+            populateCategoryFilter();
+        }
+
+        function adjustUIForRole() {
+            // 根據用戶角色調整介面
+            if (userRole === 'volunteer') {
+                // 志工只能查看，隱藏所有操作按鈕
+                document.getElementById('addItemBtn').style.display = 'none';
+                document.getElementById('addInventoryBtn').style.display = 'none';
+                document.getElementById('batchPickupBtn').style.display = 'none';
+                document.getElementById('stockAdjustBtn').style.display = 'none';
+                document.getElementById('printReceiptBtn').style.display = 'none';
+                
+                // 隱藏捐贈和發放紀錄標籤頁
+                document.getElementById('donationTab').style.display = 'none';
+                document.getElementById('recordsTab').style.display = 'none';
+                
+                // 隱藏篩選中的編輯功能
+                document.getElementById('editSafetyStockToggle').parentElement.style.display = 'none';
+            } else if (userRole === 'staff') {
+                // 工作人員可以進行物資管理，但不能調整庫存
+                document.getElementById('stockAdjustBtn').style.display = 'none';
+            }
+            // 管理員可以看到所有功能
+        }
+
+        function checkPermission(requiredRole) {
+            const roleHierarchy = { 'volunteer': 0, 'staff': 1, 'admin': 2 };
+            return roleHierarchy[userRole] >= roleHierarchy[requiredRole];
+        }
+
+        function logout() {
+            // 清除本地資料
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('userRole');
+            
+            // 重置全域變數
+            currentUser = null;
+            userRole = null;
+            
+            // 顯示登入頁面
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('loginPage').classList.remove('hidden');
+            
+            // Google 登出
+            google.accounts.id.disableAutoSelect();
+        }
+
+        // 檢查登入狀態
+        function checkLoginStatus() {
+            const savedUser = localStorage.getItem('currentUser');
+            const savedRole = localStorage.getItem('userRole');
+            
+            if (savedUser && savedRole) {
+                currentUser = JSON.parse(savedUser);
+                userRole = savedRole;
+                showMainApp();
+            }
+        }
+
         // 標籤頁切換功能
         function switchTab(tab) {
+            // 權限檢查
+            if (userRole === 'volunteer' && (tab === 'donation' || tab === 'records')) {
+                alert('您沒有權限查看此頁面');
+                return;
+            }
+            
             currentTab = tab;
             
-            // 更新標籤頁樣式
             const inventoryTab = document.getElementById('inventoryTab');
             const donationTab = document.getElementById('donationTab');
             const recordsTab = document.getElementById('recordsTab');
             
-            // 重置所有標籤頁樣式
             inventoryTab.className = 'flex-1 px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-md transition-colors duration-200 text-gray-500 hover:text-gray-700';
             donationTab.className = 'flex-1 px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-md transition-colors duration-200 text-gray-500 hover:text-gray-700';
             recordsTab.className = 'flex-1 px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-md transition-colors duration-200 text-gray-500 hover:text-gray-700';
             
-            // 隱藏所有視圖
             document.getElementById('normalView').classList.add('hidden');
             document.getElementById('donationView').classList.add('hidden');
             document.getElementById('recordsView').classList.add('hidden');
@@ -896,10 +1082,8 @@
 
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
-            renderItems();
-            updateStats();
-            populateInventorySelect();
-            populateCategoryFilter();
+            // 檢查登入狀態
+            checkLoginStatus();
             
             // 搜尋功能
             document.getElementById('searchInput').addEventListener('keyup', function(e) {
@@ -928,12 +1112,15 @@
                     searchDonationRecords();
                 }
             });
-            
-
         });
 
-        // 開啟 Modal
+        // 開啟 Modal（加入權限檢查）
         function openModal(mode, index = -1) {
+            if (!checkPermission('staff')) {
+                alert('您沒有權限執行此操作');
+                return;
+            }
+            
             const modal = document.getElementById('itemModal');
             const title = document.getElementById('modalTitle');
             
@@ -942,7 +1129,6 @@
                 document.getElementById('itemForm').reset();
                 editingIndex = -1;
                 
-                // 重置物資容器為單一項目
                 resetItemsContainer();
                 populateAllItemSelects();
                 
@@ -950,16 +1136,14 @@
                 title.textContent = '編輯物資';
                 const item = items[index];
                 
-                // 重置為單一項目並填入資料
                 resetItemsContainer();
                 populateAllItemSelects();
                 
                 const firstRow = document.querySelector('.item-row');
                 firstRow.querySelector('.item-name').value = item.name;
-                firstRow.querySelector('.item-unit').value = item.unit;
                 firstRow.querySelector('.item-quantity').value = item.quantity;
+                firstRow.querySelector('.item-expiry').value = item.expiryDate || '';
                 document.getElementById('itemNotes').value = item.notes || '';
-                document.getElementById('safetyStock').value = item.safetyStock || 5;
                 editingIndex = index;
             }
             
@@ -974,18 +1158,19 @@
             modal.classList.remove('flex');
         }
 
-
-
         // 儲存物資
         function saveItem() {
+            if (!checkPermission('staff')) {
+                alert('您沒有權限執行此操作');
+                return;
+            }
+            
             const donorName = document.getElementById('donorName').value.trim();
             const donorPhone = document.getElementById('donorPhone').value.trim();
             const donorAddress = document.getElementById('donorAddress').value.trim();
             const notes = document.getElementById('itemNotes').value.trim();
-            const safetyStock = parseInt(document.getElementById('safetyStock').value) || 5;
             const lineNotify = document.getElementById('lineNotify').checked;
             
-            // 收集所有物資項目
             const itemRows = document.querySelectorAll('.item-row');
             const itemsData = [];
             
@@ -993,14 +1178,14 @@
                 const row = itemRows[i];
                 const name = row.querySelector('.item-name').value;
                 const quantity = parseInt(row.querySelector('.item-quantity').value);
-                const unit = row.querySelector('.item-unit').value;
+                const expiryDate = row.querySelector('.item-expiry').value;
                 
                 if (!name || !quantity || quantity <= 0) {
                     alert(`請完整填寫第 ${i + 1} 項物資資訊`);
                     return;
                 }
                 
-                itemsData.push({ name, quantity, unit });
+                itemsData.push({ name, quantity, expiryDate });
             }
             
             if (itemsData.length === 0) {
@@ -1008,18 +1193,15 @@
                 return;
             }
             
-            // 建立捐贈者資訊字串
             const donorInfo = `${donorName}${donorPhone ? ` (${donorPhone})` : ''}${donorAddress ? ` - ${donorAddress}` : ''}`;
             
             if (editingIndex === -1) {
-                // 新增模式：處理多項物資
                 itemsData.forEach(itemData => {
-                    saveItemData(itemData, donorInfo, notes, safetyStock, lineNotify);
+                    saveItemData(itemData, donorInfo, notes, 5, lineNotify);
                 });
             } else {
-                // 編輯模式：只處理第一項物資
                 const itemData = itemsData[0];
-                updateExistingItem(editingIndex, itemData, donorInfo, notes, safetyStock, lineNotify);
+                updateExistingItem(editingIndex, itemData, donorInfo, notes, 5, lineNotify);
             }
             
             localStorage.setItem('charityItems', JSON.stringify(items));
@@ -1029,16 +1211,17 @@
         }
 
         function saveItemData(itemData, donorInfo, notes, safetyStock, lineNotify) {
-            // 查找是否已存在相同物資名稱和單位的物資
             const existingIndex = items.findIndex(item => 
-                item.name === itemData.name && item.unit === itemData.unit
+                item.name === itemData.name
             );
             
             if (existingIndex !== -1) {
-                // 更新現有物資（只有名稱和單位都相同才合併）
                 const existingItem = items[existingIndex];
                 existingItem.quantity += itemData.quantity;
                 existingItem.lastUpdated = new Date().toLocaleDateString('zh-TW');
+                if (itemData.expiryDate) {
+                    existingItem.expiryDate = itemData.expiryDate;
+                }
                 
                 existingItem.operations.push({
                     type: 'donation',
@@ -1047,15 +1230,15 @@
                     notes: `捐贈者：${donorInfo}${notes ? ` - ${notes}` : ''}`
                 });
             } else {
-                // 新增物資（不同單位的相同物資會分開建立）
                 const newItem = {
                     name: itemData.name,
                     category: getItemCategory(itemData.name),
                     barcode: '',
-                    unit: itemData.unit,
+                    unit: '個',
                     quantity: itemData.quantity,
                     safetyStock: safetyStock,
                     notes: notes,
+                    expiryDate: itemData.expiryDate || '',
                     createdDate: new Date().toLocaleDateString('zh-TW', { month: '2-digit', day: '2-digit' }),
                     lastUpdated: new Date().toLocaleDateString('zh-TW'),
                     image: null,
@@ -1074,10 +1257,10 @@
         function updateExistingItem(index, itemData, donorInfo, notes, safetyStock, lineNotify) {
             const existingItem = items[index];
             existingItem.name = itemData.name;
-            existingItem.unit = itemData.unit;
             existingItem.quantity = itemData.quantity;
             existingItem.safetyStock = safetyStock;
             existingItem.notes = notes;
+            existingItem.expiryDate = itemData.expiryDate || '';
             existingItem.lastUpdated = new Date().toLocaleDateString('zh-TW');
             existingItem.lineNotify = lineNotify;
             
@@ -1101,10 +1284,9 @@
             const itemsToRender = filteredItems || getFilteredAndSortedItems();
             
             if (itemsToRender.length === 0) {
-                // 桌面版空狀態
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="3" class="px-6 py-8 text-center text-gray-500">
+                        <td colspan="4" class="px-6 py-8 text-center text-gray-500">
                             <div class="flex flex-col items-center">
                                 <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-2.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 009.586 13H7"></path>
@@ -1116,7 +1298,6 @@
                     </tr>
                 `;
                 
-                // 手機版空狀態
                 mobileList.innerHTML = `
                     <div class="text-center py-12">
                         <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1131,9 +1312,22 @@
 
             // 桌面版表格
             tbody.innerHTML = itemsToRender.map((item, index) => {
-                // 從分類中提取類別名稱（去掉前綴字母）
                 const categoryName = item.category ? item.category.replace(/^[A-Z]-/, '') : '其他';
                 const actualIndex = items.findIndex(i => i.name === item.name && i.category === item.category);
+                
+                // 檢查是否即將過期（30天內）
+                let expiryWarning = '';
+                if (item.expiryDate) {
+                    const expiryDate = new Date(item.expiryDate);
+                    const today = new Date();
+                    const daysUntilExpiry = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+                    
+                    if (daysUntilExpiry <= 0) {
+                        expiryWarning = '<div class="text-xs text-red-500">已過期</div>';
+                    } else if (daysUntilExpiry <= 30) {
+                        expiryWarning = `<div class="text-xs text-orange-500">${daysUntilExpiry}天後過期</div>`;
+                    }
+                }
                 
                 return `
                     <tr class="hover:bg-gray-50">
@@ -1144,6 +1338,8 @@
                         </td>
                         <td class="px-3 lg:px-6 py-4">
                             <div class="text-sm font-medium text-gray-900">${item.name}</div>
+                            ${item.expiryDate ? `<div class="text-xs text-gray-500">效期：${item.expiryDate}</div>` : ''}
+                            ${expiryWarning}
                             ${item.notes ? `<div class="text-xs text-gray-500 truncate max-w-32">${item.notes}</div>` : ''}
                         </td>
                         <td class="px-3 lg:px-6 py-4 whitespace-nowrap">
@@ -1166,13 +1362,26 @@
 
             // 手機版卡片
             mobileList.innerHTML = itemsToRender.map((item, originalIndex) => {
-                // 找到原始索引
                 const actualIndex = items.findIndex(i => i.name === item.name && i.category === item.category);
                 const categoryName = item.category ? item.category.replace(/^[A-Z]-/, '') : '其他';
+                
+                // 檢查是否即將過期
+                let expiryWarning = '';
+                if (item.expiryDate) {
+                    const expiryDate = new Date(item.expiryDate);
+                    const today = new Date();
+                    const daysUntilExpiry = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+                    
+                    if (daysUntilExpiry <= 0) {
+                        expiryWarning = '<div class="text-xs text-red-500 mt-1">已過期</div>';
+                    } else if (daysUntilExpiry <= 30) {
+                        expiryWarning = `<div class="text-xs text-orange-500 mt-1">${daysUntilExpiry}天後過期</div>`;
+                    }
+                }
+                
                 return `
                 <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
                     <div class="flex items-start gap-3">
-                        <!-- 物資資訊 -->
                         <div class="flex-1 min-w-0">
                             <div class="flex justify-between items-start mb-2">
                                 <div class="flex-1">
@@ -1188,6 +1397,8 @@
                             </div>
                             
                             <div class="space-y-2 text-sm text-gray-600">
+                                ${item.expiryDate ? `<div class="text-xs text-gray-500">效期：${item.expiryDate}</div>` : ''}
+                                ${expiryWarning}
                                 ${item.notes ? `<div class="text-xs text-gray-500 line-clamp-2">${item.notes}</div>` : ''}
                                 <div class="flex items-center gap-2">
                                     <span class="text-xs text-gray-500">安全庫存量:</span>
@@ -1210,8 +1421,13 @@
             }).join('');
         }
 
-        // 刪除物資
+        // 刪除物資（加入權限檢查）
         function deleteItem(index) {
+            if (!checkPermission('admin')) {
+                alert('您沒有權限執行此操作');
+                return;
+            }
+            
             if (confirm('確定要刪除此物資嗎？')) {
                 items.splice(index, 1);
                 localStorage.setItem('charityItems', JSON.stringify(items));
@@ -1226,7 +1442,6 @@
             if (searchTerm === '') {
                 renderItems();
             } else {
-                // 先獲取篩選和排序後的物資，再進行搜尋
                 const baseItems = getFilteredAndSortedItems();
                 const filteredItems = baseItems.filter(item => 
                     item.name.toLowerCase().includes(searchTerm) ||
@@ -1265,17 +1480,8 @@
                         <input type="number" class="item-quantity w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" required min="0" placeholder="0">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">單位</label>
-                        <select class="item-unit w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option value="包">包</option>
-                            <option value="箱">箱</option>
-                            <option value="個">個</option>
-                            <option value="件">件</option>
-                            <option value="公斤">公斤</option>
-                            <option value="公升">公升</option>
-                            <option value="組">組</option>
-                            <option value="份">份</option>
-                        </select>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">有效日期（選填）</label>
+                        <input type="date" class="item-expiry w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
                     </div>
                 </div>
             `;
@@ -1295,1865 +1501,9 @@
                 updateDeleteButtons();
             }
         }
-        
         function updateRowNumbers() {
             const rows = document.querySelectorAll('.item-row');
             rows.forEach((row, index) => {
                 const numberSpan = row.querySelector('span');
                 numberSpan.textContent = `物資 #${index + 1}`;
-            });
-        }
-        
-        function updateDeleteButtons() {
-            const rows = document.querySelectorAll('.item-row');
-            const deleteButtons = document.querySelectorAll('.item-row button[onclick*="removeItemRow"]');
-            
-            deleteButtons.forEach(button => {
-                if (rows.length <= 1) {
-                    button.classList.add('hidden');
-                } else {
-                    button.classList.remove('hidden');
-                }
-            });
-        }
-        
-        function resetItemsContainer() {
-            const container = document.getElementById('itemsContainer');
-            container.innerHTML = `
-                <div class="item-row bg-white p-3 rounded border border-gray-200 space-y-3">
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm font-medium text-gray-700">物資 #1</span>
-                        <button type="button" onclick="removeItemRow(this)" class="text-red-600 hover:text-red-800 text-sm hidden">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">物資名稱</label>
-                        <select class="item-name w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" required>
-                            <option value="">請選擇物資名稱</option>
-                        </select>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">數量</label>
-                            <input type="number" class="item-quantity w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" required min="0" placeholder="0">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">單位</label>
-                            <select class="item-unit w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
-                                <option value="包">包</option>
-                                <option value="箱">箱</option>
-                                <option value="個">個</option>
-                                <option value="件">件</option>
-                                <option value="公斤">公斤</option>
-                                <option value="公升">公升</option>
-                                <option value="組">組</option>
-                                <option value="份">份</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function populateAllItemSelects() {
-            const selects = document.querySelectorAll('.item-name');
-            selects.forEach(select => populateItemSelect(select));
-        }
-        
-        function populateItemSelect(select) {
-            const defaultOption = '<option value="">請選擇物資名稱</option>';
-            
-            // 按分類分組
-            const groupedItems = {};
-            inventoryItemsList.forEach(item => {
-                if (!groupedItems[item.category]) {
-                    groupedItems[item.category] = [];
-                }
-                groupedItems[item.category].push(item);
-            });
-
-            let optionsHTML = defaultOption;
-            Object.keys(groupedItems).forEach(category => {
-                optionsHTML += `<optgroup label="${category}">`;
-                groupedItems[category].forEach(item => {
-                    optionsHTML += `<option value="${item.name}">${item.name}</option>`;
-                });
-                optionsHTML += '</optgroup>';
-            });
-
-            select.innerHTML = optionsHTML;
-        }
-
-        // 更新統計資料
-        function updateStats() {
-            document.getElementById('totalItems').textContent = items.length;
-            
-            const currentMonth = new Date().getMonth();
-            let monthlyDonation = 0;
-            let monthlyDistribution = 0;
-            let lowStock = 0;
-
-            items.forEach(item => {
-                // 計算低庫存
-                if (item.quantity > 0 && item.quantity <= (item.safetyStock || 5)) {
-                    lowStock++;
-                }
-
-                // 計算本月捐贈和發放
-                if (item.operations) {
-                    item.operations.forEach(op => {
-                        const opDate = new Date(op.date);
-                        if (opDate.getMonth() === currentMonth) {
-                            if (op.type === 'donation' || op.type === 'corporate' || op.type === 'designated') {
-                                monthlyDonation += op.quantity;
-                            } else if (op.type === 'distribution' || op.type === 'pickup') {
-                                monthlyDistribution += Math.abs(op.quantity);
-                            }
-                        }
-                    });
-                }
-            });
-
-            document.getElementById('monthlyDonation').textContent = monthlyDonation;
-            document.getElementById('monthlyDistribution').textContent = monthlyDistribution;
-            document.getElementById('lowStock').textContent = lowStock;
-        }
-
-        // 匯出資料
-        function exportData() {
-            if (items.length === 0) {
-                alert('沒有資料可以匯出');
-                return;
-            }
-
-            // 建立 CSV 內容
-            const csvContent = "物資名稱,國際條碼,單位,數量,最後更新,備註\n"
-                + items.map(item => `${item.name},${item.barcode || ''},${item.unit},${item.quantity},${item.lastUpdated},"${item.notes || ''}"`).join("\n");
-
-            // 加入 BOM 以確保 Excel 正確識別 UTF-8 編碼
-            const BOM = '\uFEFF';
-            const csvWithBOM = BOM + csvContent;
-
-            // 建立 Blob 並下載
-            const blob = new Blob([csvWithBOM], { type: 'text/csv;charset=utf-8' });
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("download", `物資清單_${new Date().toLocaleDateString('zh-TW')}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-        }
-
-        // 列印捐贈收據
-        function printReceipt() {
-            // 收集所有捐贈紀錄
-            let allDonationRecords = [];
-            items.forEach(item => {
-                if (item.operations) {
-                    item.operations.forEach(op => {
-                        if (op.type === 'donation' || op.type === 'corporate' || op.type === 'designated') {
-                            let donor = '未記錄';
-                            let donorPhone = '';
-                            let donorAddress = '';
-                            
-                            if (op.notes) {
-                                const match = op.notes.match(/捐贈者：(.+?)(?:\s*-\s*|$)/);
-                                if (match) {
-                                    const donorInfo = match[1];
-                                    // 嘗試解析電話和地址
-                                    const phoneMatch = donorInfo.match(/\(([^)]+)\)/);
-                                    if (phoneMatch) {
-                                        donorPhone = phoneMatch[1];
-                                        donor = donorInfo.replace(/\s*\([^)]+\)/, '');
-                                    } else {
-                                        donor = donorInfo;
-                                    }
-                                    
-                                    // 嘗試解析地址
-                                    const addressMatch = donorInfo.match(/\s*-\s*(.+)$/);
-                                    if (addressMatch) {
-                                        donorAddress = addressMatch[1];
-                                        donor = donor.replace(/\s*-\s*.+$/, '');
-                                    }
-                                }
-                            }
-                            
-                            allDonationRecords.push({
-                                date: op.date,
-                                itemName: item.name,
-                                quantity: op.quantity,
-                                unit: item.unit,
-                                donor: donor,
-                                donorPhone: donorPhone,
-                                donorAddress: donorAddress,
-                                notes: item.notes || '',
-                                selected: false
-                            });
-                        }
-                    });
-                }
-            });
-
-            if (allDonationRecords.length === 0) {
-                alert('目前沒有捐贈物資可以列印收據');
-                return;
-            }
-
-            // 開啟選取視窗
-            openReceiptSelectionModal(allDonationRecords);
-            
-            receiptWindow.document.write(`
-                <!DOCTYPE html>
-                <html lang="zh-TW">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>愛心物資捐贈收據</title>
-                    <style>
-                        body { font-family: 'Microsoft JhengHei', sans-serif; margin: 40px; line-height: 1.6; }
-                        .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px; }
-                        .title { font-size: 24px; font-weight: bold; color: #2563eb; margin-bottom: 10px; }
-                        .subtitle { font-size: 16px; color: #666; }
-                        .info-section { margin: 20px 0; }
-                        .info-row { display: flex; margin: 10px 0; }
-                        .label { font-weight: bold; width: 120px; }
-                        .value { flex: 1; border-bottom: 1px dotted #ccc; padding-bottom: 2px; }
-                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-                        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-                        th { background-color: #f8f9fa; font-weight: bold; }
-                        .footer { margin-top: 40px; text-align: center; font-size: 14px; color: #666; }
-                        .signature { margin-top: 50px; display: flex; justify-content: space-between; }
-                        .sign-box { text-align: center; }
-                        .sign-line { border-bottom: 1px solid #333; width: 150px; margin: 20px auto; }
-                        @media print { body { margin: 20px; } }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <div class="title">愛心物資捐贈收據</div>
-                        <div class="subtitle">DONATION RECEIPT</div>
-                    </div>
-                    
-                    <div class="info-section">
-                        <div class="info-row">
-                            <span class="label">收據編號：</span>
-                            <span class="value">R${Date.now().toString().slice(-8)}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="label">開立日期：</span>
-                            <span class="value">${currentDate}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="label">捐贈者姓名：</span>
-                            <span class="value"></span>
-                        </div>
-                        <div class="info-row">
-                            <span class="label">聯絡電話：</span>
-                            <span class="value"></span>
-                        </div>
-                        <div class="info-row">
-                            <span class="label">地址：</span>
-                            <span class="value"></span>
-                        </div>
-                    </div>
-
-                    <h3>捐贈物資明細</h3>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>物資名稱</th>
-                                <th>數量</th>
-                                <th>單位</th>
-                                <th>捐贈日期</th>
-                                <th>備註</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${donationItems.map(item => {
-                                const donationOp = item.operations.find(op => 
-                                    op.type === 'donation' || op.type === 'corporate' || op.type === 'designated'
-                                );
-                                return `
-                                    <tr>
-                                        <td>${item.name}</td>
-                                        <td>${donationOp ? donationOp.quantity : item.quantity}</td>
-                                        <td>${item.unit}</td>
-                                        <td>${donationOp ? donationOp.date : item.lastUpdated}</td>
-                                        <td>${item.notes || ''}</td>
-                                    </tr>
-                                `;
-                            }).join('')}
-                        </tbody>
-                    </table>
-
-                    <div class="info-section">
-                        <p><strong>感謝您的愛心捐贈！</strong></p>
-                        <p>您所捐贈的物資將用於幫助需要的弱勢族群，讓愛心傳遞到社會每個角落。</p>
-                        <p>本收據僅作為捐贈證明，如需正式捐贈證明書，請洽詢相關單位。</p>
-                    </div>
-
-                    <div class="signature">
-                        <div class="sign-box">
-                            <div class="sign-line"></div>
-                            <div>捐贈者簽名</div>
-                        </div>
-                        <div class="sign-box">
-                            <div class="sign-line"></div>
-                            <div>機構代表簽名</div>
-                        </div>
-                    </div>
-
-                    <div class="footer">
-                        <p>苗栗社福促進協會物資管理平台 · 列印日期：${currentDate}</p>
-                        <p>此為系統自動產生的收據範本，實際使用請依各機構規定調整</p>
-                    </div>
-                </body>
-                </html>
-            `);
-            
-            receiptWindow.document.close();
-            
-            // 等待內容載入後自動列印
-            setTimeout(() => {
-                receiptWindow.print();
-            }, 500);
-        }
-
-
-
-
-
-        // 開啟物資領取清單 Modal
-        function openPickupListModal() {
-            const modal = document.getElementById('pickupListModal');
-            const itemsList = document.getElementById('pickupItemsList');
-            
-            // 篩選有庫存的物資
-            const availableItems = items.filter(item => item.quantity > 0);
-            
-            if (availableItems.length === 0) {
-                itemsList.innerHTML = `
-                    <div class="col-span-full text-center py-12">
-                        <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-2.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 009.586 13H7"></path>
-                        </svg>
-                        <p class="text-lg font-medium text-gray-500">目前沒有可領取的物資</p>
-                        <p class="text-sm text-gray-400">所有物資庫存為零</p>
-                    </div>
-                `;
-            } else {
-                itemsList.innerHTML = availableItems.map((item, originalIndex) => {
-                    const actualIndex = items.findIndex(i => i === item);
-                    return `
-                        <div class="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow duration-200">
-                            <!-- 物資圖片 -->
-                            <div class="w-full h-32 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden mb-3">
-                                ${item.image ? 
-                                    `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">` :
-                                    `<svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                    </svg>`
-                                }
-                            </div>
-                            
-                            <!-- 物資名稱 -->
-                            <h4 class="text-lg font-bold text-gray-900 mb-2">${item.name}</h4>
-                            
-                            <!-- 庫存狀態 -->
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="text-2xl font-bold ${item.quantity < 5 ? 'text-orange-600' : 'text-green-600'}">${item.quantity}</span>
-                                <span class="text-sm text-gray-600">${item.unit}</span>
-                            </div>
-                            ${item.quantity < 5 ? '<div class="text-xs text-orange-500 mb-2">庫存不足</div>' : ''}
-                            
-                            <!-- 基本資訊 -->
-                            <div class="space-y-1 text-sm text-gray-600 mb-3">
-                                <div>條碼：<span class="font-mono">${item.barcode || '無'}</span></div>
-                            </div>
-                            
-                            <!-- 備註 -->
-                            ${item.notes ? `<div class="text-xs text-gray-500 mb-3 line-clamp-2">${item.notes}</div>` : ''}
-                            
-                            <!-- 領取按鈕 -->
-                            <button onclick="openPickupModal(${actualIndex}); closePickupListModal();" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                                領取此物資
-                            </button>
-                        </div>
-                    `;
-                }).join('');
-            }
-            
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        // 關閉物資領取清單 Modal
-        function closePickupListModal() {
-            const modal = document.getElementById('pickupListModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        // 開啟物資領取 Modal
-        function openPickupModal(index) {
-            const item = items[index];
-            pickupItemIndex = index;
-            
-            // 顯示物資資訊
-            document.getElementById('pickupItemInfo').innerHTML = `
-                <div class="flex items-center gap-4">
-                    <div class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
-                        ${item.image ? 
-                            `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">` :
-                            `<svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>`
-                        }
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-lg text-gray-900">${item.name}</h4>
-                        <p class="text-sm text-gray-600">庫存：${item.quantity} ${item.unit}</p>
-                        ${item.notes ? `<p class="text-xs text-gray-500">${item.notes}</p>` : ''}
-                    </div>
-                </div>
-            `;
-            
-            // 設定可領取數量
-            document.getElementById('availableQuantity').textContent = item.quantity;
-            document.getElementById('pickupQuantity').max = item.quantity;
-            document.getElementById('pickupQuantity').value = Math.min(1, item.quantity);
-            
-            // 清空表單
-            document.getElementById('recipientUnit').value = '';
-            document.getElementById('customUnit').value = '';
-            document.getElementById('customUnit').classList.add('hidden');
-            document.getElementById('recipientPhone').value = '';
-            document.getElementById('pickupNotes').value = '';
-            document.getElementById('pickupEvidence').value = '';
-            
-            // 顯示 Modal
-            const modal = document.getElementById('pickupModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        // 關閉物資領取 Modal
-        function closePickupModal() {
-            const modal = document.getElementById('pickupModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            pickupItemIndex = -1;
-        }
-
-        // 處理單位選擇
-        function handleUnitSelection() {
-            const unitSelect = document.getElementById('recipientUnit');
-            const customInput = document.getElementById('customUnit');
-            
-            if (unitSelect.value === '其他') {
-                customInput.classList.remove('hidden');
-                customInput.focus();
-            } else {
-                customInput.classList.add('hidden');
-                customInput.value = '';
-            }
-        }
-
-        // 確認領取
-        function confirmPickup() {
-            const pickupQuantity = parseInt(document.getElementById('pickupQuantity').value);
-            const recipientUnit = document.getElementById('recipientUnit').value;
-            const customUnit = document.getElementById('customUnit').value.trim();
-            const recipientPhone = document.getElementById('recipientPhone').value.trim();
-            const pickupNotes = document.getElementById('pickupNotes').value.trim();
-            const evidenceFile = document.getElementById('pickupEvidence').files[0];
-            
-            if (!pickupQuantity || pickupQuantity <= 0) {
-                alert('請輸入有效的領取數量');
-                return;
-            }
-            
-            let finalUnit = recipientUnit;
-            if (recipientUnit === '其他') {
-                if (!customUnit) {
-                    alert('請輸入自訂單位名稱');
-                    return;
-                }
-                finalUnit = customUnit;
-            } else if (!recipientUnit) {
-                alert('請選擇領取單位');
-                return;
-            }
-            
-            const item = items[pickupItemIndex];
-            
-            if (pickupQuantity > item.quantity) {
-                alert('領取數量不能超過庫存數量');
-                return;
-            }
-            
-            // 處理佐證照片
-            if (evidenceFile) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    savePickupRecord(item, pickupQuantity, finalUnit, recipientPhone, pickupNotes, e.target.result);
-                };
-                reader.readAsDataURL(evidenceFile);
-            } else {
-                savePickupRecord(item, pickupQuantity, finalUnit, recipientPhone, pickupNotes, null);
-            }
-        }
-
-        // 儲存領取紀錄
-        function savePickupRecord(item, pickupQuantity, finalUnit, recipientPhone, pickupNotes, evidenceImage) {
-            // 更新庫存
-            item.quantity -= pickupQuantity;
-            item.lastUpdated = new Date().toLocaleDateString('zh-TW');
-            
-            // 記錄領取操作
-            if (!item.operations) {
-                item.operations = [];
-            }
-            
-            item.operations.push({
-                type: 'pickup',
-                quantity: -pickupQuantity,
-                date: new Date().toLocaleDateString('zh-TW'),
-                notes: `領取單位：${finalUnit}${recipientPhone ? ` (${recipientPhone})` : ''}${pickupNotes ? ` - ${pickupNotes}` : ''}`,
-                recipientUnit: finalUnit,
-                recipientPhone: recipientPhone,
-                pickupNotes: pickupNotes,
-                evidenceImage: evidenceImage
-            });
-            
-            // 儲存資料
-            localStorage.setItem('charityItems', JSON.stringify(items));
-            
-            // 更新顯示
-            renderItems();
-            updateStats();
-            
-            // 關閉 Modal
-            closePickupModal();
-            
-            // 顯示成功訊息
-            alert(`領取成功！\n物資：${item.name}\n數量：${pickupQuantity} ${item.unit}\n領取單位：${finalUnit}`);
-        }
-
-
-
-        // 渲染捐贈紀錄
-        function renderDonationRecords(filteredRecords = null) {
-            const tbody = document.getElementById('donationRecordsTable');
-            const noDonationMessage = document.getElementById('noDonationMessage');
-            
-            // 收集所有捐贈紀錄
-            let allRecords = [];
-            items.forEach(item => {
-                if (item.operations) {
-                    item.operations.forEach(op => {
-                        if (op.type === 'corporate' || op.type === 'donation' || op.type === 'designated') {
-                            const typeText = {
-                                'corporate': '企業捐贈',
-                                'donation': '個人捐贈',
-                                'designated': '指定捐贈'
-                            };
-                            
-                            // 從備註中提取捐贈者資訊
-                            let donor = '未記錄';
-                            if (op.notes) {
-                                const match = op.notes.match(/捐贈者：(.+?)(?:\s*-\s*|$)/);
-                                if (match) {
-                                    donor = match[1];
-                                }
-                            }
-                            
-                            allRecords.push({
-                                date: op.date,
-                                itemName: item.name,
-                                quantity: op.quantity,
-                                unit: item.unit,
-                                type: typeText[op.type],
-                                donor: donor,
-                                notes: op.notes || '-',
-                                originalIndex: items.indexOf(item),
-                                operationIndex: item.operations.indexOf(op)
-                            });
-                        }
-                    });
-                }
-            });
-
-            // 按日期排序（最新的在前）
-            allRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-            const recordsToRender = filteredRecords || allRecords;
-
-            if (recordsToRender.length === 0) {
-                tbody.innerHTML = '';
-                noDonationMessage.classList.remove('hidden');
-                return;
-            }
-
-            noDonationMessage.classList.add('hidden');
-            tbody.innerHTML = recordsToRender.map(record => `
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.date}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${record.itemName}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.quantity} ${record.unit}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            record.type === '企業捐贈' ? 'bg-green-100 text-green-800' :
-                            record.type === '個人捐贈' ? 'bg-blue-100 text-blue-800' :
-                            'bg-purple-100 text-purple-800'
-                        }">${record.type}</span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.donor}</td>
-                    <td class="px-6 py-4 text-sm text-gray-900 max-w-xs truncate" title="${record.notes}">${record.notes}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button onclick="editDonationRecord(${record.originalIndex}, ${record.operationIndex})" class="text-indigo-600 hover:text-indigo-900 mr-2">編輯</button>
-                        <button onclick="deleteDonationRecord(${record.originalIndex}, ${record.operationIndex})" class="text-red-600 hover:text-red-900">刪除</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        // 搜尋捐贈紀錄
-        function searchDonationRecords() {
-            const searchTerm = document.getElementById('donationSearchInput').value.toLowerCase();
-            
-            if (searchTerm === '') {
-                renderDonationRecords();
-                return;
-            }
-
-            // 收集所有捐贈紀錄
-            let allRecords = [];
-            items.forEach(item => {
-                if (item.operations) {
-                    item.operations.forEach(op => {
-                        if (op.type === 'corporate' || op.type === 'donation' || op.type === 'designated') {
-                            const typeText = {
-                                'corporate': '企業捐贈',
-                                'donation': '個人捐贈',
-                                'designated': '指定捐贈'
-                            };
-                            
-                            let donor = '未記錄';
-                            if (op.notes) {
-                                const match = op.notes.match(/捐贈者：(.+?)(?:\s*-\s*|$)/);
-                                if (match) {
-                                    donor = match[1];
-                                }
-                            }
-                            
-                            allRecords.push({
-                                date: op.date,
-                                itemName: item.name,
-                                quantity: op.quantity,
-                                unit: item.unit,
-                                type: typeText[op.type],
-                                donor: donor,
-                                notes: op.notes || '-',
-                                originalIndex: items.indexOf(item),
-                                operationIndex: item.operations.indexOf(op)
-                            });
-                        }
-                    });
-                }
-            });
-
-            // 篩選紀錄
-            const filteredRecords = allRecords.filter(record => 
-                record.itemName.toLowerCase().includes(searchTerm) ||
-                record.donor.toLowerCase().includes(searchTerm) ||
-                record.type.toLowerCase().includes(searchTerm) ||
-                record.notes.toLowerCase().includes(searchTerm)
-            );
-
-            renderDonationRecords(filteredRecords);
-        }
-
-        // 匯出捐贈紀錄
-        function exportDonationRecords() {
-            // 收集所有捐贈紀錄
-            let allRecords = [];
-            items.forEach(item => {
-                if (item.operations) {
-                    item.operations.forEach(op => {
-                        if (op.type === 'corporate' || op.type === 'donation' || op.type === 'designated') {
-                            const typeText = {
-                                'corporate': '企業捐贈',
-                                'donation': '個人捐贈',
-                                'designated': '指定捐贈'
-                            };
-                            
-                            let donor = '未記錄';
-                            if (op.notes) {
-                                const match = op.notes.match(/捐贈者：(.+?)(?:\s*-\s*|$)/);
-                                if (match) {
-                                    donor = match[1];
-                                }
-                            }
-                            
-                            allRecords.push({
-                                date: op.date,
-                                itemName: item.name,
-                                quantity: op.quantity,
-                                unit: item.unit,
-                                type: typeText[op.type],
-                                donor: donor,
-                                notes: op.notes || '-',
-                                originalIndex: items.indexOf(item),
-                                operationIndex: item.operations.indexOf(op)
-                            });
-                        }
-                    });
-                }
-            });
-
-            if (allRecords.length === 0) {
-                alert('沒有捐贈紀錄可以匯出');
-                return;
-            }
-
-            // 按日期排序
-            allRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-            const csvContent = "捐贈日期,物資名稱,捐贈數量,單位,捐贈類型,捐贈者,備註\n"
-                + allRecords.map(record => 
-                    `${record.date},${record.itemName},${record.quantity},${record.unit},"${record.type}","${record.donor}","${record.notes}"`
-                ).join("\n");
-
-            // 加入 BOM 以確保 Excel 正確識別 UTF-8 編碼
-            const BOM = '\uFEFF';
-            const csvWithBOM = BOM + csvContent;
-            const blob = new Blob([csvWithBOM], { type: 'text/csv;charset=utf-8' });
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("download", `物資捐贈紀錄_${new Date().toLocaleDateString('zh-TW')}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-        }
-
-        // 渲染發放紀錄
-        function renderPickupRecords(filteredRecords = null) {
-            const tbody = document.getElementById('pickupRecordsTable');
-            const noRecordsMessage = document.getElementById('noRecordsMessage');
-            
-            // 收集所有領取紀錄和調整紀錄
-            let allRecords = [];
-            items.forEach(item => {
-                if (item.operations) {
-                    item.operations.forEach(op => {
-                        if (op.type === 'pickup') {
-                            allRecords.push({
-                                date: op.date,
-                                itemName: item.name,
-                                quantity: Math.abs(op.quantity),
-                                unit: item.unit,
-                                recipientUnit: op.recipientUnit || '未記錄',
-                                recipientPhone: op.recipientPhone || '-',
-                                pickupNotes: op.pickupNotes || '-'
-                            });
-                        } else if (op.type === 'adjustment') {
-                            allRecords.push({
-                                date: op.date,
-                                itemName: item.name,
-                                quantity: `${op.quantity > 0 ? '+' : ''}${op.quantity}`,
-                                unit: item.unit,
-                                recipientUnit: '庫存調整',
-                                recipientPhone: '-',
-                                pickupNotes: op.notes || '-'
-                            });
-                        }
-                    });
-                }
-            });
-
-            // 按日期排序（最新的在前）
-            allRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-            const recordsToRender = filteredRecords || allRecords;
-
-            if (recordsToRender.length === 0) {
-                tbody.innerHTML = '';
-                noRecordsMessage.classList.remove('hidden');
-                return;
-            }
-
-            noRecordsMessage.classList.add('hidden');
-            tbody.innerHTML = recordsToRender.map(record => `
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.date}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${record.itemName}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.quantity} ${record.unit}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.recipientUnit}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.recipientPhone}</td>
-                    <td class="px-6 py-4 text-sm text-gray-900 max-w-xs truncate" title="${record.pickupNotes}">${record.pickupNotes}</td>
-                </tr>
-            `).join('');
-        }
-
-        // 搜尋領取紀錄
-        function searchPickupRecords() {
-            const searchTerm = document.getElementById('recordSearchInput').value.toLowerCase();
-            
-            if (searchTerm === '') {
-                renderPickupRecords();
-                return;
-            }
-
-            // 收集所有領取紀錄和調整紀錄
-            let allRecords = [];
-            items.forEach(item => {
-                if (item.operations) {
-                    item.operations.forEach(op => {
-                        if (op.type === 'pickup') {
-                            allRecords.push({
-                                date: op.date,
-                                itemName: item.name,
-                                quantity: Math.abs(op.quantity),
-                                unit: item.unit,
-                                recipientUnit: op.recipientUnit || '未記錄',
-                                recipientPhone: op.recipientPhone || '-',
-                                pickupNotes: op.pickupNotes || '-'
-                            });
-                        } else if (op.type === 'adjustment') {
-                            allRecords.push({
-                                date: op.date,
-                                itemName: item.name,
-                                quantity: `${op.quantity > 0 ? '+' : ''}${op.quantity}`,
-                                unit: item.unit,
-                                recipientUnit: '庫存調整',
-                                recipientPhone: '-',
-                                pickupNotes: op.notes || '-'
-                            });
-                        }
-                    });
-                }
-            });
-
-            // 篩選紀錄
-            const filteredRecords = allRecords.filter(record => 
-                record.itemName.toLowerCase().includes(searchTerm) ||
-                record.recipientUnit.toLowerCase().includes(searchTerm) ||
-                record.pickupNotes.toLowerCase().includes(searchTerm)
-            );
-
-            renderPickupRecords(filteredRecords);
-        }
-
-        // 匯出領取紀錄
-        function exportPickupRecords() {
-            // 收集所有領取紀錄和調整紀錄
-            let allRecords = [];
-            items.forEach(item => {
-                if (item.operations) {
-                    item.operations.forEach(op => {
-                        if (op.type === 'pickup') {
-                            allRecords.push({
-                                date: op.date,
-                                itemName: item.name,
-                                quantity: Math.abs(op.quantity),
-                                unit: item.unit,
-                                recipientUnit: op.recipientUnit || '未記錄',
-                                recipientPhone: op.recipientPhone || '-',
-                                pickupNotes: op.pickupNotes || '-'
-                            });
-                        } else if (op.type === 'adjustment') {
-                            allRecords.push({
-                                date: op.date,
-                                itemName: item.name,
-                                quantity: `${op.quantity > 0 ? '+' : ''}${op.quantity}`,
-                                unit: item.unit,
-                                recipientUnit: '庫存調整',
-                                recipientPhone: '-',
-                                pickupNotes: op.notes || '-'
-                            });
-                        }
-                    });
-                }
-            });
-
-            if (allRecords.length === 0) {
-                alert('沒有領取紀錄可以匯出');
-                return;
-            }
-
-            // 按日期排序
-            allRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-            const csvContent = "領取日期,物資名稱,領取數量,單位,領取單位,聯絡電話,用途備註\n"
-                + allRecords.map(record => 
-                    `${record.date},${record.itemName},${record.quantity},${record.unit},"${record.recipientUnit}","${record.recipientPhone}","${record.pickupNotes}"`
-                ).join("\n");
-
-            // 加入 BOM 以確保 Excel 正確識別 UTF-8 編碼
-            const BOM = '\uFEFF';
-            const csvWithBOM = BOM + csvContent;
-            const blob = new Blob([csvWithBOM], { type: 'text/csv;charset=utf-8' });
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("download", `物資領取紀錄_${new Date().toLocaleDateString('zh-TW')}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-        }
-
-        // 庫存調整功能
-        function openStockAdjustmentModal() {
-            const modal = document.getElementById('stockAdjustmentModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            renderStockAdjustmentTable();
-        }
-
-        function closeStockAdjustmentModal() {
-            const modal = document.getElementById('stockAdjustmentModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function renderStockAdjustmentTable() {
-            const tbody = document.getElementById('stockAdjustmentTable');
-            
-            if (items.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="px-6 py-8 text-center text-gray-500">
-                            <div class="flex flex-col items-center">
-                                <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-2.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 009.586 13H7"></path>
-                                </svg>
-                                <p class="text-lg font-medium">尚無物資可調整</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            tbody.innerHTML = items.map((item, index) => `
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4">
-                        <div class="text-sm font-medium text-gray-900">${item.name}</div>
-                        <div class="text-xs text-gray-500">${item.unit}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium ${item.quantity === 0 ? 'text-red-600' : item.quantity < 5 ? 'text-orange-600' : 'text-green-600'}">${item.quantity}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <input type="number" id="adjust_${index}" class="w-20 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="±數量">
-                    </td>
-                    <td class="px-6 py-4">
-                        <input type="text" id="reason_${index}" class="w-full border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="調整原因">
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex gap-2">
-                            <button onclick="adjustStock(${index})" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-200">調整</button>
-                            <button onclick="deleteItem(${index}); renderStockAdjustmentTable();" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-200">刪除</button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function adjustStock(index) {
-            const adjustInput = document.getElementById(`adjust_${index}`);
-            const reasonInput = document.getElementById(`reason_${index}`);
-            const adjustAmount = parseInt(adjustInput.value);
-            const reason = reasonInput.value.trim();
-
-            if (isNaN(adjustAmount) || adjustAmount === 0) {
-                alert('請輸入有效的調整數量');
-                return;
-            }
-
-            if (!reason) {
-                alert('請輸入調整原因');
-                return;
-            }
-
-            const item = items[index];
-            const newQuantity = item.quantity + adjustAmount;
-
-            if (newQuantity < 0) {
-                alert('調整後庫存不能為負數');
-                return;
-            }
-
-            // 更新庫存
-            item.quantity = newQuantity;
-            item.lastUpdated = new Date().toLocaleDateString('zh-TW');
-
-            // 記錄調整操作
-            if (!item.operations) {
-                item.operations = [];
-            }
-
-            item.operations.push({
-                type: 'adjustment',
-                quantity: adjustAmount,
-                date: new Date().toLocaleDateString('zh-TW'),
-                notes: `庫存調整：${adjustAmount > 0 ? '+' : ''}${adjustAmount} - ${reason}`
-            });
-
-            // 儲存資料
-            localStorage.setItem('charityItems', JSON.stringify(items));
-
-            // 更新顯示
-            renderItems();
-            updateStats();
-            renderStockAdjustmentTable();
-
-            // 清空輸入框
-            adjustInput.value = '';
-            reasonInput.value = '';
-
-            // 顯示成功訊息
-            alert(`庫存調整成功！\n物資：${item.name}\n調整數量：${adjustAmount > 0 ? '+' : ''}${adjustAmount}\n新庫存：${newQuantity}`);
-        }
-
-        // 點擊 Modal 外部關閉（已移除新增物資Modal的此功能）
-
-        document.getElementById('pickupModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closePickupModal();
-            }
-        });
-
-
-
-        document.getElementById('pickupListModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closePickupListModal();
-            }
-        });
-
-        document.getElementById('stockAdjustmentModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeStockAdjustmentModal();
-            }
-        });
-
-        document.getElementById('addInventoryItemModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeAddInventoryItemModal();
-            }
-        });
-
-        document.getElementById('batchPickupModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeBatchPickupModal();
-            }
-        });
-
-        document.getElementById('editDonationModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeEditDonationModal();
-            }
-        });
-
-        // 庫存品項管理功能
-        function populateInventorySelect() {
-            const select = document.getElementById('itemName');
-            const defaultOption = '<option value="">請選擇物資名稱</option>';
-            
-            // 按分類分組
-            const groupedItems = {};
-            inventoryItemsList.forEach(item => {
-                if (!groupedItems[item.category]) {
-                    groupedItems[item.category] = [];
-                }
-                groupedItems[item.category].push(item);
-            });
-
-            let optionsHTML = defaultOption;
-            Object.keys(groupedItems).forEach(category => {
-                optionsHTML += `<optgroup label="${category}">`;
-                groupedItems[category].forEach(item => {
-                    optionsHTML += `<option value="${item.name}">${item.name}</option>`;
-                });
-                optionsHTML += '</optgroup>';
-            });
-
-            select.innerHTML = optionsHTML;
-        }
-
-        function openAddInventoryItemModal() {
-            const modal = document.getElementById('addInventoryItemModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeAddInventoryItemModal() {
-            const modal = document.getElementById('addInventoryItemModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.getElementById('customItemName').value = '';
-        }
-
-        function addCustomInventoryItem() {
-            const itemName = document.getElementById('customItemName').value.trim();
-            
-            if (!itemName) {
-                alert('請輸入品項名稱');
-                return;
-            }
-            
-            selectInventoryItem(itemName);
-        }
-
-
-
-        function selectInventoryItem(itemName) {
-            // 新增自訂品項到庫存清單
-            const newItem = {
-                category: '常用類',
-                name: itemName
-            };
-            
-            // 檢查是否已存在
-            const exists = inventoryItemsList.some(item => item.name === itemName);
-            if (!exists) {
-                inventoryItemsList.push(newItem);
-                
-                // 同時新增到物資清單
-                const newInventoryItem = {
-                    name: itemName,
-                    category: '常用類',
-                    barcode: '',
-                    unit: '個',
-                    quantity: 0,
-                    notes: '自訂品項',
-                    createdDate: new Date().toLocaleDateString('zh-TW', { month: '2-digit', day: '2-digit' }),
-                    lastUpdated: new Date().toLocaleDateString('zh-TW'),
-                    image: null,
-                    lineNotify: false,
-                    operations: []
-                };
-                
-                items.push(newInventoryItem);
-                localStorage.setItem('charityItems', JSON.stringify(items));
-                
-                // 更新下拉選單
-                populateInventorySelect();
-                populateCategoryFilter();
-                renderItems();
-                updateStats();
-                
-                alert(`已新增自訂品項：${itemName}`);
-            } else {
-                alert('此品項已存在於庫存清單中');
-            }
-            
-            closeAddInventoryItemModal();
-        }
-
-        // 表格排序功能
-        function sortTable(field) {
-            // 如果點擊同一欄位，切換排序方向
-            if (currentSort.field === field) {
-                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
-            } else {
-                currentSort.field = field;
-                currentSort.direction = 'asc';
-            }
-            
-            renderItems();
-        }
-
-        // 篩選功能
-        function applyFilters() {
-            currentFilters.category = document.getElementById('categoryFilter').value;
-            currentFilters.stock = document.getElementById('stockFilter').value;
-            renderItems();
-        }
-
-        function clearFilters() {
-            document.getElementById('categoryFilter').value = '';
-            document.getElementById('stockFilter').value = '';
-            currentFilters = { category: '', stock: '' };
-            currentSort = { field: 'name', direction: 'asc' }; // 重置為預設排序
-            renderItems();
-        }
-
-        // 填充類別篩選下拉選單
-        function populateCategoryFilter() {
-            const categoryFilter = document.getElementById('categoryFilter');
-            
-            // 從庫存品項清單中獲取所有類別，確保完整性
-            const allCategories = [...new Set(inventoryItemsList.map(item => item.category))];
-            
-            // 也包含現有物資的類別（以防有自訂類別）
-            const existingCategories = [...new Set(items.map(item => item.category).filter(cat => cat))];
-            
-            // 合併並去重
-            const categories = [...new Set([...allCategories, ...existingCategories])].sort();
-            
-            let optionsHTML = '<option value="">全部類別</option>';
-            categories.forEach(category => {
-                const categoryName = category ? category.replace(/^[A-Z]-/, '') : '其他';
-                optionsHTML += `<option value="${category}">${categoryName}</option>`;
-            });
-            
-            categoryFilter.innerHTML = optionsHTML;
-        }
-
-        // 獲取篩選和排序後的物資列表
-        function getFilteredAndSortedItems() {
-            let filteredItems = [...items];
-            
-            // 應用篩選
-            if (currentFilters.category) {
-                filteredItems = filteredItems.filter(item => item.category === currentFilters.category);
-            }
-            
-            if (currentFilters.stock) {
-                switch (currentFilters.stock) {
-                    case 'available':
-                        filteredItems = filteredItems.filter(item => item.quantity > (item.safetyStock || 5));
-                        break;
-                    case 'low':
-                        filteredItems = filteredItems.filter(item => item.quantity > 0 && item.quantity <= (item.safetyStock || 5));
-                        break;
-                    case 'empty':
-                        filteredItems = filteredItems.filter(item => item.quantity === 0);
-                        break;
-                }
-            }
-            
-            // 應用排序
-            if (currentSort.field) {
-                filteredItems.sort((a, b) => {
-                    let aValue, bValue;
-                    
-                    switch (currentSort.field) {
-                        case 'category':
-                            aValue = a.category || '';
-                            bValue = b.category || '';
-                            break;
-                        case 'name':
-                            aValue = a.name;
-                            bValue = b.name;
-                            break;
-                        case 'quantity':
-                            aValue = a.quantity;
-                            bValue = b.quantity;
-                            break;
-                        default:
-                            return 0;
-                    }
-                    
-                    if (currentSort.field === 'quantity') {
-                        // 數字排序
-                        return currentSort.direction === 'asc' ? aValue - bValue : bValue - aValue;
-                    } else {
-                        // 字串排序
-                        if (aValue < bValue) return currentSort.direction === 'asc' ? -1 : 1;
-                        if (aValue > bValue) return currentSort.direction === 'asc' ? 1 : -1;
-                        return 0;
-                    }
-                });
-            }
-            
-            return filteredItems;
-        }
-
-        // 批量物資領取功能
-        function openBatchPickupModal() {
-            const modal = document.getElementById('batchPickupModal');
-            selectedBatchItems = {};
-            
-            // 清空表單
-            document.getElementById('batchRecipientUnit').value = '';
-            document.getElementById('batchCustomUnit').value = '';
-            document.getElementById('batchCustomUnit').classList.add('hidden');
-            document.getElementById('batchRecipientPhone').value = '';
-            document.getElementById('batchPickupNotes').value = '';
-            
-            renderBatchItemsList();
-            updateSelectedItemsSummary();
-            
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeBatchPickupModal() {
-            const modal = document.getElementById('batchPickupModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            selectedBatchItems = {};
-        }
-
-        function handleBatchUnitSelection() {
-            const unitSelect = document.getElementById('batchRecipientUnit');
-            const customInput = document.getElementById('batchCustomUnit');
-            
-            if (unitSelect.value === '其他') {
-                customInput.classList.remove('hidden');
-                customInput.focus();
-            } else {
-                customInput.classList.add('hidden');
-                customInput.value = '';
-            }
-        }
-
-        function renderBatchItemsList() {
-            const itemsList = document.getElementById('batchItemsList');
-            const availableItems = items.filter(item => item.quantity > 0);
-            
-            if (availableItems.length === 0) {
-                itemsList.innerHTML = `
-                    <div class="col-span-full text-center py-8">
-                        <p class="text-gray-500">目前沒有可領取的物資</p>
-                    </div>
-                `;
-                return;
-            }
-
-            itemsList.innerHTML = availableItems.map((item, index) => {
-                const actualIndex = items.findIndex(i => i === item);
-                const isSelected = selectedBatchItems[actualIndex];
-                
-                return `
-                    <div class="border border-gray-200 rounded-lg p-4 ${isSelected ? 'bg-blue-50 border-blue-300' : 'bg-white'}">
-                        <div class="flex items-start gap-3">
-                            <input type="checkbox" 
-                                   id="batch_item_${actualIndex}" 
-                                   ${isSelected ? 'checked' : ''}
-                                   onchange="toggleBatchItem(${actualIndex})"
-                                   class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                            <div class="flex-1 min-w-0">
-                                <label for="batch_item_${actualIndex}" class="block text-sm font-medium text-gray-900 cursor-pointer">
-                                    ${item.name}
-                                </label>
-                                <p class="text-sm text-gray-600">庫存：${item.quantity} ${item.unit}</p>
-                                ${item.quantity < 5 ? '<p class="text-xs text-orange-500">庫存不足</p>' : ''}
-                                
-                                <div class="mt-2 ${isSelected ? '' : 'hidden'}" id="quantity_input_${actualIndex}">
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">領取數量</label>
-                                    <input type="number" 
-                                           min="1" 
-                                           max="${item.quantity}"
-                                           value="${isSelected ? isSelected.quantity : 1}"
-                                           onchange="updateBatchItemQuantity(${actualIndex}, this.value)"
-                                           class="w-full border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function toggleBatchItem(itemIndex) {
-            const checkbox = document.getElementById(`batch_item_${itemIndex}`);
-            const quantityInput = document.getElementById(`quantity_input_${itemIndex}`);
-            const item = items[itemIndex];
-            
-            if (checkbox.checked) {
-                selectedBatchItems[itemIndex] = {
-                    name: item.name,
-                    unit: item.unit,
-                    maxQuantity: item.quantity,
-                    quantity: 1
-                };
-                quantityInput.classList.remove('hidden');
-            } else {
-                delete selectedBatchItems[itemIndex];
-                quantityInput.classList.add('hidden');
-            }
-            
-            // 更新卡片樣式
-            const card = checkbox.closest('.border');
-            if (checkbox.checked) {
-                card.classList.add('bg-blue-50', 'border-blue-300');
-                card.classList.remove('bg-white');
-            } else {
-                card.classList.remove('bg-blue-50', 'border-blue-300');
-                card.classList.add('bg-white');
-            }
-            
-            updateSelectedItemsSummary();
-        }
-
-        function updateBatchItemQuantity(itemIndex, quantity) {
-            const qty = parseInt(quantity);
-            if (selectedBatchItems[itemIndex] && qty > 0) {
-                selectedBatchItems[itemIndex].quantity = qty;
-                updateSelectedItemsSummary();
-            }
-        }
-
-        function selectAllAvailableItems() {
-            const availableItems = items.filter(item => item.quantity > 0);
-            
-            availableItems.forEach(item => {
-                const itemIndex = items.indexOf(item);
-                const checkbox = document.getElementById(`batch_item_${itemIndex}`);
-                
-                if (checkbox && !checkbox.checked) {
-                    checkbox.checked = true;
-                    toggleBatchItem(itemIndex);
-                }
-            });
-        }
-
-        function updateSelectedItemsSummary() {
-            const summary = document.getElementById('selectedItemsSummary');
-            const itemsList = document.getElementById('selectedItemsList');
-            
-            const selectedCount = Object.keys(selectedBatchItems).length;
-            
-            if (selectedCount === 0) {
-                summary.classList.add('hidden');
-                return;
-            }
-            
-            summary.classList.remove('hidden');
-            itemsList.innerHTML = Object.entries(selectedBatchItems).map(([index, item]) => 
-                `<div>${item.name}：${item.quantity} ${item.unit}</div>`
-            ).join('');
-        }
-
-        function confirmBatchPickup() {
-            const recipientUnit = document.getElementById('batchRecipientUnit').value;
-            const customUnit = document.getElementById('batchCustomUnit').value.trim();
-            const recipientPhone = document.getElementById('batchRecipientPhone').value.trim();
-            const pickupNotes = document.getElementById('batchPickupNotes').value.trim();
-            
-            if (Object.keys(selectedBatchItems).length === 0) {
-                alert('請至少選擇一項物資');
-                return;
-            }
-            
-            let finalUnit = recipientUnit;
-            if (recipientUnit === '其他') {
-                if (!customUnit) {
-                    alert('請輸入自訂單位名稱');
-                    return;
-                }
-                finalUnit = customUnit;
-            } else if (!recipientUnit) {
-                alert('請選擇領取單位');
-                return;
-            }
-            
-            // 批量處理領取
-            let successCount = 0;
-            const totalItems = Object.keys(selectedBatchItems).length;
-            
-            Object.entries(selectedBatchItems).forEach(([itemIndex, selectedItem]) => {
-                const item = items[parseInt(itemIndex)];
-                const pickupQuantity = selectedItem.quantity;
-                
-                if (pickupQuantity <= item.quantity) {
-                    // 更新庫存
-                    item.quantity -= pickupQuantity;
-                    item.lastUpdated = new Date().toLocaleDateString('zh-TW');
-                    
-                    // 記錄領取操作
-                    if (!item.operations) {
-                        item.operations = [];
-                    }
-                    
-                    item.operations.push({
-                        type: 'pickup',
-                        quantity: -pickupQuantity,
-                        date: new Date().toLocaleDateString('zh-TW'),
-                        notes: `批量領取 - 領取單位：${finalUnit}${recipientPhone ? ` (${recipientPhone})` : ''}${pickupNotes ? ` - ${pickupNotes}` : ''}`,
-                        recipientUnit: finalUnit,
-                        recipientPhone: recipientPhone,
-                        pickupNotes: pickupNotes,
-                        evidenceImage: null
-                    });
-                    
-                    successCount++;
-                }
-            });
-            
-            // 儲存資料
-            localStorage.setItem('charityItems', JSON.stringify(items));
-            
-            // 更新顯示
-            renderItems();
-            updateStats();
-            
-            // 關閉 Modal
-            closeBatchPickupModal();
-            
-            // 顯示成功訊息
-            alert(`批量領取成功！\n成功領取 ${successCount}/${totalItems} 項物資\n領取單位：${finalUnit}`);
-        }
-
-        // 切換安全庫存量編輯模式
-        function toggleSafetyStockEdit() {
-            safetyStockEditMode = document.getElementById('editSafetyStockToggle').checked;
-            
-            // 切換所有安全庫存量輸入框的狀態
-            const inputs = document.querySelectorAll('.safety-stock-input');
-            const displays = document.querySelectorAll('.safety-stock-display');
-            
-            inputs.forEach(input => {
-                input.disabled = !safetyStockEditMode;
-                input.style.display = safetyStockEditMode ? 'inline-block' : 'none';
-            });
-            
-            displays.forEach(display => {
-                display.style.display = safetyStockEditMode ? 'none' : 'inline-block';
-            });
-        }
-
-        // 更新安全庫存量功能
-        function updateSafetyStock(itemIndex, newValue) {
-            if (!safetyStockEditMode) {
-                return; // 如果不在編輯模式，不允許更新
-            }
-            
-            const safetyStock = parseInt(newValue);
-            
-            if (isNaN(safetyStock) || safetyStock < 0) {
-                alert('請輸入有效的安全庫存量（不能小於0）');
-                renderItems(); // 重新渲染以恢復原值
-                return;
-            }
-            
-            // 更新物資的安全庫存量
-            items[itemIndex].safetyStock = safetyStock;
-            items[itemIndex].lastUpdated = new Date().toLocaleDateString('zh-TW');
-            
-            // 儲存資料
-            localStorage.setItem('charityItems', JSON.stringify(items));
-            
-            // 更新統計（因為低庫存計算會改變）
-            updateStats();
-            
-            // 更新對應的顯示文字
-            const displayElement = document.querySelector(`.safety-stock-display[data-index="${itemIndex}"]`);
-            if (displayElement) {
-                displayElement.textContent = safetyStock;
-            }
-        }
-
-        // 捐贈紀錄編輯功能
-        function editDonationRecord(itemIndex, operationIndex) {
-            const item = items[itemIndex];
-            const operation = item.operations[operationIndex];
-            
-            editingDonationRecord = { itemIndex, operationIndex };
-            
-            // 填入編輯表單
-            document.getElementById('editDonationItemName').value = item.name;
-            document.getElementById('editDonationQuantity').value = operation.quantity;
-            document.getElementById('editDonationType').value = operation.type;
-            
-            // 從備註中提取捐贈者資訊
-            let donor = '';
-            if (operation.notes) {
-                const match = operation.notes.match(/捐贈者：(.+?)(?:\s*-\s*|$)/);
-                if (match) {
-                    donor = match[1];
-                }
-            }
-            document.getElementById('editDonationDonor').value = donor;
-            document.getElementById('editDonationNotes').value = operation.notes || '';
-            
-            // 顯示 Modal
-            const modal = document.getElementById('editDonationModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeEditDonationModal() {
-            const modal = document.getElementById('editDonationModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            editingDonationRecord = null;
-        }
-
-        function saveDonationEdit() {
-            if (!editingDonationRecord) return;
-            
-            const { itemIndex, operationIndex } = editingDonationRecord;
-            const item = items[itemIndex];
-            const operation = item.operations[operationIndex];
-            
-            const newQuantity = parseInt(document.getElementById('editDonationQuantity').value);
-            const newType = document.getElementById('editDonationType').value;
-            const newDonor = document.getElementById('editDonationDonor').value.trim();
-            const newNotes = document.getElementById('editDonationNotes').value.trim();
-            
-            if (!newQuantity || newQuantity <= 0) {
-                alert('請輸入有效的捐贈數量');
-                return;
-            }
-            
-            // 計算庫存差異
-            const quantityDiff = newQuantity - operation.quantity;
-            
-            // 更新庫存
-            item.quantity += quantityDiff;
-            
-            // 更新操作紀錄
-            operation.quantity = newQuantity;
-            operation.type = newType;
-            operation.notes = `捐贈者：${newDonor}${newNotes ? ` - ${newNotes}` : ''}`;
-            
-            // 儲存資料
-            localStorage.setItem('charityItems', JSON.stringify(items));
-            
-            // 更新顯示
-            renderItems();
-            updateStats();
-            renderDonationRecords();
-            
-            // 關閉 Modal
-            closeEditDonationModal();
-            
-            alert('捐贈紀錄已更新！');
-        }
-
-        function deleteDonationRecord(itemIndex, operationIndex) {
-            if (!confirm('確定要刪除此捐贈紀錄嗎？這將會調整相應的庫存數量。')) {
-                return;
-            }
-            
-            const item = items[itemIndex];
-            const operation = item.operations[operationIndex];
-            
-            // 調整庫存（減去捐贈數量）
-            item.quantity -= operation.quantity;
-            
-            // 如果庫存變為負數，設為0
-            if (item.quantity < 0) {
-                item.quantity = 0;
-            }
-            
-            // 刪除操作紀錄
-            item.operations.splice(operationIndex, 1);
-            
-            // 儲存資料
-            localStorage.setItem('charityItems', JSON.stringify(items));
-            
-            // 更新顯示
-            renderItems();
-            updateStats();
-            renderDonationRecords();
-            
-            alert('捐贈紀錄已刪除，庫存已相應調整！');
-        }
-
-        // 收據選取功能
-        function openReceiptSelectionModal(donationRecords) {
-            receiptRecords = donationRecords;
-            const modal = document.getElementById('receiptSelectionModal');
-            const tbody = document.getElementById('receiptSelectionTable');
-            
-            tbody.innerHTML = donationRecords.map((record, index) => `
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <input type="checkbox" 
-                               id="receipt_${index}" 
-                               onchange="toggleReceiptSelection(${index})"
-                               class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.date}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${record.itemName}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.quantity} ${record.unit}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.donor}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.donorPhone}</td>
-                    <td class="px-6 py-4 text-sm text-gray-900 max-w-xs truncate" title="${record.donorAddress}">${record.donorAddress}</td>
-                </tr>
-            `).join('');
-            
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeReceiptSelectionModal() {
-            const modal = document.getElementById('receiptSelectionModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function toggleReceiptSelection(index) {
-            const checkbox = document.getElementById(`receipt_${index}`);
-            receiptRecords[index].selected = checkbox.checked;
-        }
-
-        function selectAllReceipts() {
-            receiptRecords.forEach((record, index) => {
-                record.selected = true;
-                const checkbox = document.getElementById(`receipt_${index}`);
-                if (checkbox) checkbox.checked = true;
-            });
-        }
-
-        function clearAllReceipts() {
-            receiptRecords.forEach((record, index) => {
-                record.selected = false;
-                const checkbox = document.getElementById(`receipt_${index}`);
-                if (checkbox) checkbox.checked = false;
-            });
-        }
-
-        function generateSelectedReceipts() {
-            const selectedRecords = receiptRecords.filter(record => record.selected);
-            
-            if (selectedRecords.length === 0) {
-                alert('請至少選擇一筆捐贈紀錄');
-                return;
-            }
-
-            // 按捐贈者分組
-            const groupedByDonor = {};
-            selectedRecords.forEach(record => {
-                const key = `${record.donor}_${record.donorPhone}_${record.donorAddress}`;
-                if (!groupedByDonor[key]) {
-                    groupedByDonor[key] = {
-                        donor: record.donor,
-                        donorPhone: record.donorPhone,
-                        donorAddress: record.donorAddress,
-                        items: []
-                    };
-                }
-                groupedByDonor[key].items.push(record);
-            });
-
-            // 為每個捐贈者生成收據
-            Object.values(groupedByDonor).forEach(donorGroup => {
-                generateReceiptForDonor(donorGroup);
-            });
-
-            closeReceiptSelectionModal();
-        }
-
-        function generateReceiptForDonor(donorGroup) {
-            const receiptWindow = window.open('', '_blank');
-            const currentDate = new Date().toLocaleDateString('zh-TW');
-            
-            receiptWindow.document.write(`
-                <!DOCTYPE html>
-                <html lang="zh-TW">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>愛心物資捐贈收據</title>
-                    <style>
-                        body { font-family: 'Microsoft JhengHei', sans-serif; margin: 40px; line-height: 1.6; }
-                        .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px; }
-                        .title { font-size: 24px; font-weight: bold; color: #2563eb; margin-bottom: 10px; }
-                        .subtitle { font-size: 16px; color: #666; }
-                        .info-section { margin: 20px 0; }
-                        .info-row { display: flex; margin: 10px 0; }
-                        .label { font-weight: bold; width: 120px; }
-                        .value { flex: 1; border-bottom: 1px dotted #ccc; padding-bottom: 2px; }
-                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-                        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-                        th { background-color: #f8f9fa; font-weight: bold; }
-                        .footer { margin-top: 40px; text-align: center; font-size: 14px; color: #666; }
-                        .signature { margin-top: 50px; display: flex; justify-content: space-between; }
-                        .sign-box { text-align: center; }
-                        .sign-line { border-bottom: 1px solid #333; width: 150px; margin: 20px auto; }
-                        @media print { body { margin: 20px; } }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <div class="title">愛心物資捐贈收據</div>
-                        <div class="subtitle">DONATION RECEIPT</div>
-                    </div>
-                    
-                    <div class="info-section">
-                        <div class="info-row">
-                            <span class="label">收據編號：</span>
-                            <span class="value">R${Date.now().toString().slice(-8)}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="label">開立日期：</span>
-                            <span class="value">${currentDate}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="label">捐贈者姓名：</span>
-                            <span class="value">${donorGroup.donor}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="label">聯絡電話：</span>
-                            <span class="value">${donorGroup.donorPhone}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="label">地址：</span>
-                            <span class="value">${donorGroup.donorAddress}</span>
-                        </div>
-                    </div>
-
-                    <h3>捐贈物資明細</h3>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>物資名稱</th>
-                                <th>數量</th>
-                                <th>單位</th>
-                                <th>捐贈日期</th>
-                                <th>備註</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${donorGroup.items.map(item => `
-                                <tr>
-                                    <td>${item.itemName}</td>
-                                    <td>${item.quantity}</td>
-                                    <td>${item.unit}</td>
-                                    <td>${item.date}</td>
-                                    <td>${item.notes}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-
-                    <div class="info-section">
-                        <p><strong>感謝您的愛心捐贈！</strong></p>
-                        <p>您所捐贈的物資將用於幫助需要的弱勢族群，讓愛心傳遞到社會每個角落。</p>
-                        <p>本收據僅作為捐贈證明，如需正式捐贈證明書，請洽詢相關單位。</p>
-                    </div>
-
-                    <div class="signature">
-                        <div class="sign-box">
-                            <div class="sign-line"></div>
-                            <div>捐贈者簽名</div>
-                        </div>
-                        <div class="sign-box">
-                            <div class="sign-line"></div>
-                            <div>機構代表簽名</div>
-                        </div>
-                    </div>
-
-                    <div class="footer">
-                        <p>苗栗社福促進協會物資管理平台 · 列印日期：${currentDate}</p>
-                        <p>此為系統自動產生的收據範本，實際使用請依各機構規定調整</p>
-                    </div>
-                </body>
-                </html>
-            `);
-            
-            receiptWindow.document.close();
-            
-            // 等待內容載入後自動列印
-            setTimeout(() => {
-                receiptWindow.print();
-            }, 500);
-        }
-
-    </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96f0e332e21cf1d4',t:'MTc1NTE3OTA3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
-</html>
+            });<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9743ba2fc623f1f4',t:'MTc1NjA0NzcxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
