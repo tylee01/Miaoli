@@ -21,6 +21,13 @@
             }
         }
     </script>
+    <script>
+    function handleCredentialResponse(response) {
+        console.log("Encoded JWT ID token: " + response.credential);
+        // 在這裡加入你處理憑證的邏輯，例如將其傳送到你的後端
+    }
+</script>
+
 </head>
 <body class="bg-gradient-to-br from-green-50 to-blue-100 min-h-screen font-chinese">
 
@@ -949,7 +956,7 @@
             // 顯示主應用程式
             showMainApp();
         }
-
+        window.handleCredentialResponse = handleCredentialResponse;
         function decodeJwtResponse(token) {
             const base64Url = token.split('.')[1];
             const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -1508,3 +1515,4 @@
                 numberSpan.textContent = `物資 #${index + 1}`;
             });
             }
+
