@@ -6,7 +6,7 @@
     <title>苗栗社福促進協會物資管理平台</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@zxing/library@latest"></script>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- 移除 Google Sign-In API，改用 OAuth 2.0 PKCE 流程 -->
     <script>
         tailwind.config = {
             theme: {
@@ -22,10 +22,165 @@
         }
     </script>
     <script>
-    function handleCredentialResponse(response) {
-        console.log("Encoded JWT ID token: " + response.credential);
-        // 在這裡加入你處理憑證的邏輯，例如將其傳送到你的後端
+    // OAuth 2.0 with PKCE 相關變數
+    const CLIENT_ID = '';
+    // 必須與 Google Cloud Console 中設定的重定向 URI 完全匹配
+    // 請確保此 URI 已在 Google Cloud Console 中註冊
+    const REDIRECT_URI = window.location.href.split('?')[0]; // 移除任何查詢參數
+    console.log("重定向 URI:", REDIRECT_URI);
+    const SCOPE = 'email profile openid';
+    const AUTH_ENDPOINT = 'https://accounts.google.com/o/oauth2/v2/auth';
+    const TOKEN_ENDPOINT = 'https://oauth2.googleapis.com/token';
+    
+    // PKCE 相關函數
+    function generateRandomString(length) {
+        let text = '';
+        const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        for (let i = 0; i < length; i++) {
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        return text;
     }
+    
+    async function generateCodeChallenge(codeVerifier) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(codeVerifier);
+        const digest = await window.crypto.subtle.digest('SHA-256', data);
+        
+        return btoa(String.fromCharCode.apply(null, 
+            new Uint8Array(digest)))
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '');
+    }
+    
+    // 初始化 OAuth 流程
+    async function initiateLogin() {
+        // 產生並儲存 code_verifier
+        const codeVerifier = generateRandomString(128);
+        localStorage.setItem('code_verifier', codeVerifier);
+        
+        // 產生 code_challenge
+        const codeChallenge = await generateCodeChallenge(codeVerifier);
+        
+        // 建立授權 URL
+        const authUrl = new URL(AUTH_ENDPOINT);
+        const params = {
+            client_id: CLIENT_ID,
+            redirect_uri: REDIRECT_URI,
+            response_type: 'code',
+            scope: SCOPE,
+            code_challenge: codeChallenge,
+            code_challenge_method: 'S256',
+            access_type: 'offline',
+            prompt: 'consent'
+        };
+        console.log(params);
+        
+        Object.keys(params).forEach(key => authUrl.searchParams.append(key, params[key]));
+        
+        // 重定向到 Google 授權頁面
+        window.location.href = authUrl.toString();
+    }
+    
+    // 處理 OAuth 回調
+    async function handleOAuthCallback() {
+        console.log("處理 OAuth 回調");
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        console.log("授權碼:", code ? "已收到" : "未收到");
+        
+        if (code) {
+            // 清除 URL 中的授權碼，避免重新整理頁面時重複處理
+            window.history.replaceState({}, document.title, REDIRECT_URI);
+            
+            try {
+                // 從 localStorage 中取得 code_verifier
+                const codeVerifier = localStorage.getItem('code_verifier');
+                
+                // 交換授權碼獲取 token
+                console.log("交換授權碼獲取 token");
+                const tokenParams = {
+                    client_id: CLIENT_ID,
+                    client_secret: '', // 注意：在前端使用 client_secret 不安全，但 Google OAuth 需要它
+                    grant_type: 'authorization_code',
+                    code: code,
+                    redirect_uri: REDIRECT_URI,
+                    code_verifier: codeVerifier
+                };
+                console.log("Token 請求參數:", tokenParams);
+                
+                const tokenResponse = await fetch(TOKEN_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams(tokenParams)
+                });
+                
+                const tokenData = await tokenResponse.json();
+                console.log("Token 回應:", tokenData);
+                
+                if (tokenData.access_token) {
+                    // 使用 access_token 獲取用戶資料
+                    const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                        headers: {
+                            'Authorization': `Bearer ${tokenData.access_token}`
+                        }
+                    });
+                    
+                    const userInfo = await userInfoResponse.json();
+                    
+                    // 處理用戶資料
+                    handleUserInfo(userInfo);
+                    
+                    // 清除 code_verifier
+                    localStorage.removeItem('code_verifier');
+                }
+            } catch (error) {
+                console.error('OAuth 流程錯誤:', error);
+            }
+        }
+    }
+    
+    // 處理用戶資訊
+    function handleUserInfo(userInfo) {
+        console.log("用戶資訊:", userInfo);
+        
+        // 檢查用戶權限
+        const email = userInfo.email;
+        let role = 'volunteer'; // 預設為志工
+        
+        if (ADMIN_EMAILS.includes(email)) {
+            role = 'admin';
+        } else if (STAFF_EMAILS.includes(email)) {
+            role = 'staff';
+        }
+        
+        // 儲存用戶資訊
+        currentUser = {
+            id: userInfo.sub,
+            name: userInfo.name,
+            email: userInfo.email,
+            picture: userInfo.picture
+        };
+        userRole = role;
+        
+        // 儲存到 localStorage
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        localStorage.setItem('userRole', role);
+        
+        // 顯示主應用程式
+        showMainApp();
+    }
+    
+    // 頁面載入時檢查是否為 OAuth 回調
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('code')) {
+            handleOAuthCallback();
+        }
+    });
 </script>
 
 </head>
@@ -41,20 +196,15 @@
             </div>
             
             <div class="space-y-6">
-                <div id="g_id_onload"
-                     data-client_id="624723498968-8sgcsno9fr11rs7o7pk620b3kb1qso0q.apps.googleusercontent.com"
-                     data-callback="handleCredentialResponse"
-                     data-auto_prompt="false">
-                </div>
-                <div class="g_id_signin" 
-                     data-type="standard"
-                     data-size="large"
-                     data-theme="outline"
-                     data-text="sign_in_with"
-                     data-shape="rectangular"
-                     data-logo_alignment="left"
-                     data-width="100%">
-                </div>
+                <button onclick="initiateLogin()" class="w-full flex items-center justify-center gap-2 bg-white hover:bg-gray-100 text-gray-800 font-semibold py-3 px-4 border border-gray-300 rounded-lg shadow-sm transition duration-200">
+                    <svg width="20" height="20" viewBox="0 0 24 24">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    </svg>
+                    使用 Google 帳號登入
+                </button>
                 
                 <div class="text-center">
                     <p class="text-xs text-gray-500">
@@ -1024,6 +1174,7 @@
             // 清除本地資料
             localStorage.removeItem('currentUser');
             localStorage.removeItem('userRole');
+            localStorage.removeItem('code_verifier');
             
             // 重置全域變數
             currentUser = null;
@@ -1032,9 +1183,6 @@
             // 顯示登入頁面
             document.getElementById('mainApp').classList.add('hidden');
             document.getElementById('loginPage').classList.remove('hidden');
-            
-            // Google 登出
-            google.accounts.id.disableAutoSelect();
         }
 
         // 檢查登入狀態
